@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %} user List {% endblock %}
+{% block page_content %}
+<div class="main-content">
+    <div class="main-header">
+        <div class="row">
+          <div class="col-md-6">
+            <form action="" method="POST">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search Name" name="keyword">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="submit">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-6">
+            <a href="{{ url_for('admin.add') }}" class="btn btn-primary float-right">Add New</a>
+          </div>
+        </div>
+      </div>
+    {% for message in get_flashed_messages() %}
+        <span class="text-danger">{{ message }}</span>
+    {% endfor %}
+    <table class="table table-bordered">
+        <thead class="">
+            <tr>
+                <td>No</td>
+                <td>Name</td>
+                <td>Division</td>
+                <td>Level</td>
+                <td>email</td>
+                <td>Role</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% set count = namespace(value=1) %}
+            {% for user in users %}
+            <tr>
+                <td>{{ count.value }}
+                    {% set count.value = count.value + 1 %}
+                </td>
+                <td>{{ user.fullname }}</td>
+                <td>{{ user.division.name }}</td>
+                <td>{{ user.level.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role.name }}</td>
+                <td>
+                  {% if current_user.role_id != 1 %}
+                    <span class="text-danger">NO ACCESS</span>
+                  {% else %}
+                    <a href="{{ url_for('admin.edit', id=user.id) }}" class="btn btn-success" title="Edit Data"><i class="fa fa-pencil"></i></a>
+                    <a href="" class="btn btn-danger delete-dialog" target-id="{{ user.id }}" title="Delete Data" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash"></i></a>
+                  {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="fixed-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              {% if prev_url %}
+              <li class="page-item">
+                <a class="page-link" href="{{ prev_url }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+              {% endif %}
+              {% for num in range(num_pages) %}
+                <li class="page-item"><a class="page-link" href="data?page={{num+1}}">{{num+1}}</a></li>
+              {% endfor %}
+              {% if next_url %}
+              <li class="page-item">
+                <a class="page-link" href="{{ next_url }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

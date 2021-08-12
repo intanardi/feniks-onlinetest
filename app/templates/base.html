@@ -1,0 +1,45 @@
+{% extends "bootstrap/base.html" %}
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+{% block title %}Flasky{% endblock %}
+{% block navbar %}
+<div class="sidenav">
+    <a href="{{ url_for('admin.index') }}">Home</a>
+    {% if current_user.role_id in [1,2] %}
+    <button class="dropdown-btn">Master Data 
+      <i class="arrow"></i>
+    </button>
+    <div class="dropdown-container">
+      <a href="{{ url_for('admin.data') }}">Master User</a>
+      <a href="{{ url_for('admin.candidate_data') }}">Master Candidat</a>
+      <a href="{{ url_for('admin.examination_data') }}">Master Examination</a>
+    </div>
+    <a href="#setting">Settings</a>
+    {% endif %}
+    {% if current_user.role_id == 3 %}
+    <a href="#test">Test</a>
+    {% endif %}
+    <a href="#contact">Profile</a>
+    <a href="{{ url_for('auth.logout') }}">logout</a>
+</div>
+<div class="navigation-header">
+  <div class="float-right mt-4 mb-2 mr-2">
+    Welcome, <b>{{current_user.fullname}}</b>
+  </div>
+</div>
+{% endblock %}
+{% block content %}
+<div id="main">
+    {% block page_content %}{% endblock %}
+</div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
+{% endblock %}
