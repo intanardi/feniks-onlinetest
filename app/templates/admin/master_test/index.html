@@ -1,12 +1,29 @@
 {% extends "base.html" %}
-{% block title %}Feniks - {% endblock %}
+{% block title %} Question Pdf{% endblock %}
 {% block page_content %}
-  <div class="header-content">
-      <h4>Examination Data</h4>
-  </div>
-  <div class="main-content">
+<div class="header-content">
+  <h4>Question PDF Data</h4>
+</div>
+<div class="main-content">
     <div class="main-header">
         <div class="row">
+          <div class="col-md-6 col-sm-12">
+            <div class="form-group">
+              <label for="level-name">Name</label>
+              <input type="text" class="form-control" value="{{ get_exam.name }}" disabled>
+            </div>
+            <div class="form-group">
+              <label for="level-name">Division</label>
+              <input type="text" class="form-control" value="{{ division.name }}" disabled>
+            </div>
+            <div class="form-group">
+              <label for="level-name">Level</label>
+              <input type="text" class="form-control" value="{{ level.name }}" disabled>
+            </div>
+          </div>
+          <div class="col-md-12 mt-3 mb-3">
+            <hr>
+          </div>
           <div class="col-md-6">
             <form action="" method="POST">
               <div class="input-group">
@@ -20,7 +37,7 @@
             </form>
           </div>
           <div class="col-md-6">
-            <a href="{{ url_for('admin.examination_add') }}" class="btn btn-primary float-right">Add New</a>
+            <a href="{{ url_for('admin.question_pdf_add', id=get_exam.id  ) }}" class="btn btn-primary float-right">Add New</a>
           </div>
         </div>
       </div>
@@ -30,27 +47,20 @@
     <table class="table table-bordered">
         <thead class="">
             <tr>
-                <td>No</td>
-                <td>name</td>
-                <td>division</td>
-                <td>level</td>
+                <td>instruction</td>
+                <td>filename</td>
                 <td>Action</td>
             </tr>
         </thead>
         <tbody>
             {% set count = namespace(value=1) %}
-            {% for exam in examinations %}
+            {% for question in quetions %}
             <tr>
-                <td>{{ count.value }}
-                    {% set count.value = count.value + 1 %}
-                </td>
-                <td>{{ exam.name }}</td>
-                <td>{{ exam.division.name }}</td>
-                <td>{{ exam.level.name }}</td>
+                <td>{{ question.instruction }}</td>
+                <td>{{ question.filename }}</td>
                 <td>
-                    <a href="{{ url_for('admin.examination_edit', id=exam.id) }}" class="btn btn-success"><i class="fa fa-pencil"></i></a>
-                    <a href="" class="btn btn-danger delete-dialog-exam" target-id="{{ exam.id }}"><i class="fa fa-trash"></i></a>
-                    <a href="{{ url_for('admin.question_pdf_data', id=exam.id) }}" class="btn btn-warning text-white">Upload File</a>
+                    <a href="{{ url_for('admin.question_edit', id=question.id) }}" class="btn btn-success">Edit</a>
+                    <a href="" class="btn btn-danger question-delete-confirmation" target-id="{{ question.id }}">Delete</a>
                 </td>
             </tr>
             {% endfor %}

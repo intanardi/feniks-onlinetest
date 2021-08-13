@@ -167,6 +167,40 @@ class Division(db.Model):
 #             db.session.add(subject)
 #             db.session.commit()
 
+class Examination(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(64))
+    division_id = db.Column(db.Integer, db.ForeignKey('division.id'))
+    level_id = db.Column(db.Integer, db.ForeignKey('level.id'))
+    is_multiple_choice = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Boolean, default=True)
+    questions = db.relationship('Question', backref='examination', lazy='dynamic')
+    choices = db.relationship('Multiple_Choice', backref='examination', lazy='dynamic')
+    pdfs = db.relationship('Pdf_Test', backref='examination', lazy='dynamic')
+    
+    def __repr__(self):
+        return '<Examination %r>' % self.name
+
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    question = db.Column(db.Text())
+    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
+    status = db.Column(db.Boolean, default=True)
+    
+    def __repr__(self):
+        return '<Question %r>' % self.name
+
+class Multiple_Choice(db.Model):
+    __tablename__ = "multiple_choice"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(64), unique=True, index=True)
+    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
+    is_correct = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Boolean, default=True)
+    
+    def __repr__(self):
+        return '<Multiple_Choice %r>' % self.name
+
 # ======================= STATIC MODELS =============================
 
 class Psikotest_Type(db.Model):
@@ -209,42 +243,20 @@ class Psikotest(db.Model):
             p.psikotest_type_id = v['psikotest_type_id']
             db.session.add(p)
             db.session.commit()
+
+class Pdf_Test(db.Model):
+    __tablename__ = "pdf_test"
+    id = db.Column(db.Integer, primary_key = True)
+    filename = db.Column(db.String(128))
+    instruction = db.Column(db.Text())
+    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
+    status = db.Column(db.Boolean, default=True)
+    
+    def __repr__(self):
+        return '<Pdf_Test %r>' % self.name
             
 
 # ======================= END STATIC MODELS ==========================
-
-class Examination(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(64))
-    division_id = db.Column(db.Integer, db.ForeignKey('division.id'))
-    level_id = db.Column(db.Integer, db.ForeignKey('level.id'))
-    is_multiple_choice = db.Column(db.Boolean, default=False)
-    status = db.Column(db.Boolean, default=True)
-    questions = db.relationship('Question', backref='examination', lazy='dynamic')
-    choices = db.relationship('Multiple_Choice', backref='examination', lazy='dynamic')
-    
-    def __repr__(self):
-        return '<Examination %r>' % self.name
-
-class Question(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    question = db.Column(db.Text())
-    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
-    status = db.Column(db.Boolean, default=True)
-    
-    def __repr__(self):
-        return '<Question %r>' % self.name
-
-class Multiple_Choice(db.Model):
-    __tablename__ = "multiple_choice"
-    id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(64), unique=True, index=True)
-    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
-    is_correct = db.Column(db.Boolean, default=False)
-    status = db.Column(db.Boolean, default=True)
-    
-    def __repr__(self):
-        return '<Multiple_Choice %r>' % self.name
 
 # Insert Static data using python shell
 def reinit():
