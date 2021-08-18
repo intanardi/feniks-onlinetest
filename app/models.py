@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import login_manager
 from flask_login import login_required
+from datetime import datetime
 
 _secret_key_mine = "dnsia129eGH1092dnsua81ainfia18ecdsn382r76dsnkudsay"
 
@@ -44,7 +45,10 @@ class User(UserMixin,db.Model):
     division_id = db.Column(db.Integer, db.ForeignKey('division.id'))
     level_id = db.Column(db.Integer, db.ForeignKey('level.id'))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=3)
+    is_deleted = db.Column(db.Boolean, default=False)
     status = db.Column(db.Boolean, default=True)
+    # canidate_schedules = db.relationship('Candidate_Schedule_Test', backref='user', lazy='dynamic')
+    # candidate_tests = db.relationship('Candidate_Test', backref='user', lazy='dynamic')
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -83,13 +87,17 @@ class User(UserMixin,db.Model):
         db.session.commit()
         return "00"
     
-    def data(self):
+    def data_list():
         _dict = []
-        user = User.query.all()
+        user = User.query.filter_by(role_id=3).all()
         for u in user:
-            role = Role.query.filter_by(id=u.role_id).first()
-            role_name = role.name
-            _dict.append({"username" : u.username, "email" : u.email, "role": role_name})
+            schedule = "Not Set"
+            schedule_status = 0
+            get_schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=u.id).first()
+            if get_schedule is not None :
+                schedule = get_schedule.date_test
+                schedule_status = 1
+            _dict.append({"name" : u.fullname, "email" : u.email,"phone" : u.phone, "address" : u.address, "status": schedule_status, "schedule": schedule, "division" : u.division.name, "level" : u.level.name})
         
         return _dict
 
@@ -123,7 +131,7 @@ class Level(db.Model):
         return '<Question_Level %r>' % self.name
     
     def insert_static_data(self):
-        values = ['SPV', 'Staff']
+        values = ['SPV', 'Staff', 'All']
         for v in values:
             level = Level()
             level.name = v
@@ -142,30 +150,12 @@ class Division(db.Model):
         return '<Division %r>' % self.name
     
     def insert_static_data(self):
-        values = ['Accounting', 'Audit' , 'Legal', 'HR', 'IT']
+        values = ['Accounting', 'Audit' , 'Legal', 'HR', 'IT', 'All']
         for v in values:
             division = Division()
             division.name = v
             db.session.add(division)
             db.session.commit()
-
-# class Subject(db.Model):
-#     __tablename__ = "subject"
-#     id = db.Column(db.Integer, primary_key = True)
-#     name = db.Column(db.String(64))
-#     status = db.Column(db.Boolean, default=True)
-#     exams = db.relationship('Exam', backref='subject', lazy='dynamic')
-
-#     def __repr__(self):
-#         return '<Division %r>' % self.name
-    
-#     def insert_static_data(self):
-#         values = ['psikotest', 'specific']
-#         for v in values:
-#             subject = Subject()
-#             subject.name = v
-#             db.session.add(subject)
-#             db.session.commit()
 
 class Examination(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -254,6 +244,30 @@ class Pdf_Test(db.Model):
     
     def __repr__(self):
         return '<Pdf_Test %r>' % self.name
+
+class Candidate_Schedule_Test(db.Model):
+    __tablename__ = "candidate_schedule_test"
+    id = db.Column(db.Integer, primary_key = True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    date_test = db.Column(db.DateTime())
+    status = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return '<Candidate_Schedule_Test %r>' % self.date_test
+
+class Candidate_Test(db.Model):
+    __tablename__ = "candidate_test"
+    id = db.Column(db.Integer, primary_key = True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    pdf_test_id = db.Column(db.Integer, db.ForeignKey('pdf_test.id'))
+    time_test = db.Column(db.Time())
+    status = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return '<Candidate_Test %r>' % self.name
+    
+    def insert_static_data(self):
+        values = ['psikotest', 'specific']
             
 
 # ======================= END STATIC MODELS ==========================

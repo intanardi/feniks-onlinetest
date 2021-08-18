@@ -48,7 +48,7 @@
         <thead class="">
             <tr>
                 <td>instruction</td>
-                <td>filename</td>
+                <td>file</td>
                 <td>Action</td>
             </tr>
         </thead>
@@ -57,7 +57,7 @@
             {% for question in quetions %}
             <tr>
                 <td>{{ question.instruction }}</td>
-                <td>{{ question.filename }}</td>
+                <td> <a href="{{ url_for('admin.open_pdf', filename=question.filename) }}">click to open</a></td>
                 <td>
                     <a href="{{ url_for('admin.question_edit', id=question.id) }}" class="btn btn-success">Edit</a>
                     <a href="" class="btn btn-danger question-delete-confirmation" target-id="{{ question.id }}">Delete</a>

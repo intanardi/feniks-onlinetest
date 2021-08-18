@@ -5,6 +5,10 @@
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome/css/font-awesome.min.css') }}">
 <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/jquery-ui.structure.min.css') }}">
+<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/jquery-ui.theme.min.css') }}">
+<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/bootstrap-clockpicker.css') }}">
 {% endblock %}
 {% block title %}Flasky{% endblock %}
 {% block navbar %}
@@ -42,4 +46,12 @@
     {{ super() }}
     <script type="text/javascript" src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/jquery-ui.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap-clockpicker.js')}}"></script>
+    <script>
+        $( function() {
+        $( "#datepicker" ).datepicker();
+        $('.clockpicker').clockpicker();
+      } );
+    </script>
 {% endblock %}

@@ -3,6 +3,9 @@
 {% block page_content %}
   <div class="header-content">
       <h4>Add Examination</h4>
+      {% for message in get_flashed_messages() %}
+            <span class="text-danger">{{ message }}</span>
+        {% endfor %}
   </div>
   <div class="main-content">
   <form action="" method="POST">

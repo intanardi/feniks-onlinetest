@@ -15,6 +15,7 @@ class Config:
     DATA_PER_PAGE = 10
     UPLOAD_FOLDER = '/app/static/upload'
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    PATH = os.getcwd()
 
     @staticmethod
     def init_app(app):

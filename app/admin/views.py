@@ -1,17 +1,16 @@
 from datetime import datetime
-from flask import render_template, session, redirect, url_for, flash, request, current_app
+from flask import render_template, session, redirect, url_for, flash, request, current_app, Flask, send_from_directory
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 from . import admin
 from .. import db, csrf
 from ..models import *
 import json
-from os.path import join, dirname, realpath
-import pathlib
 import os
-path = os.getcwd()
+from os.path import join, dirname, realpath
 
-MYPATH = pathlib.Path(__file__).parent.resolve()
+apps = Flask(__name__)
+apps.config['UPLOAD_PATH'] = 'app/static/uploads/test'
 
 # UPLOADS_TEST_PATH = join(dirname(realpath(__file__)), 'static/upload/')
 
@@ -19,6 +18,20 @@ ROWS_PER_PAGE = 5
 ADMIN_PERMISSION_LIST = [1,2]
 UPLOAD_FOLDER = '/static/upload'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@admin.route('/open_pdf/<filename>')
+def open_pdf(filename):
+    print("heree")
+    print("----")
+    print(filename)
+    # directory = "/static/pdf/psikotest/soal_cfit.pdf"
+    directory = "/static/uploads/test/" + filename
+    print(directory)
+    return render_template('admin/master_test/preview.html', directory=directory)
 
 @admin.route('/')
 @admin.route('/index')
@@ -162,14 +175,16 @@ def candidate_data():
     page = request.args.get('page', 1, type=int)
     total_rows = User.query.filter(User.role_id.in_(["3"]), User.status.is_(True), User.fullname.like(_search)).count()
     boxsize = ROWS_PER_PAGE
-    print(total_rows)
     num_pages = -(total_rows // -boxsize)
-    candidates = User.query.filter(User.role_id.in_(["3"]), User.status.is_(True), User.fullname.like(_search)).paginate(page=page, per_page=ROWS_PER_PAGE)
+    candidates = db.session.query(User.id, User.fullname.label('name'), User.email, User.phone, Level.name.label('level'), Division.name.label('division'), Candidate_Schedule_Test.date_test.label('schedule')).join(Level, Division, Candidate_Schedule_Test, isouter=True).filter(User.role_id.in_(["3"]), User.status.is_(True), User.fullname.like(_search)).order_by(User.id).paginate(page=page, per_page=ROWS_PER_PAGE)
+    # print(candidates.items)
+    # candidates = User.query.filter(User.role_id.in_(["3"]), User.status.is_(True), User.fullname.like(_search)).paginate(page=page, per_page=ROWS_PER_PAGE)
+    candidate_schedule = Candidate_Schedule_Test.query.all()
     next_url = url_for('admin.candidate_data', page=candidates.next_num) \
         if candidates.has_next else None
     prev_url = url_for('admin.candidate_data', page=candidates.prev_num) \
         if candidates.has_prev else None
-    return render_template('admin/candidate/index.html', candidates=candidates.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages))
+    return render_template('admin/candidate/index.html', candidates=candidates.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), candidate_schedule=candidate_schedule)
     
 @login_required
 @admin.route('/candidate/add', methods=['GET', 'POST'])
@@ -234,10 +249,39 @@ def candidate_edit(id):
     return render_template('admin/candidate/edit.html', candidate=candidate, divisions=divisions, levels=levels)
 
 @login_required
+@admin.route('/candidate/set_schedule/<id>', methods=['GET', 'POST'])
+@csrf.exempt
+def candidate_set_schedule(id):
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    schedule_date = ""
+    schedule_time = ""
+    schedule = Candidate_Schedule_Test()
+    divisions = Division.query.all()
+    levels = Level.query.all()
+    candidate = User.query.filter_by(id=id).first()
+    is_time_set = Candidate_Schedule_Test.query.filter_by(candidate_id=candidate.id).first()
+    if is_time_set:
+        schedule_date = is_time_set.date_test.strftime("%m/%d/%Y")
+        schedule_time = is_time_set.date_test.strftime("%H:%M")
+        schedule = is_time_set
+    # print(schedule)
+    if request.method == 'POST':
+        timeFormated = request.form['date']+" "+request.form['time']
+        datetimeformated = datetime.strptime(timeFormated,'%m/%d/%Y %H:%M')
+        schedule.candidate_id = id
+        schedule.date_test = datetimeformated
+        db.session.add(schedule)
+        db.session.commit()
+        return redirect(url_for('admin.candidate_data'))
+    return render_template('admin/candidate/set_schedule_add.html', candidate=candidate, schedule_date=schedule_date, schedule_time=schedule_time)
+
+@login_required
 @admin.route('/candidate/delete/<id>', methods=['GET', 'POST'])
 @csrf.exempt
 def candidate_delete(id):
-    if current_user.role_id not in [1,2]:
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
         return redirect(url_for('candidate.home'))
     candidate = User.query.filter_by(id=id).first()
@@ -275,9 +319,9 @@ def examination_data():
     boxsize = ROWS_PER_PAGE
     num_pages = -(total_rows // -boxsize)
     examination = Examination.query.filter(Examination.status.is_(True)).paginate(page=page, per_page=ROWS_PER_PAGE)
-    next_url = url_for('admin.question_data', page=examination.next_num) \
+    next_url = url_for('admin.examination_data', page=examination.next_num) \
         if examination.has_next else None
-    prev_url = url_for('admin.question_data', page=examination.prev_num) \
+    prev_url = url_for('admin.examination_data', page=examination.prev_num) \
         if examination.has_prev else None
     return render_template('admin/examination/index.html', examinations=examination.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages))
 
@@ -295,6 +339,10 @@ def examination_add():
     divisions = Division.query.all()
     levels = Level.query.all()
     if request.method == 'POST':
+        check_availibility = Examination.query.filter_by(division_id=request.form['division'], level_id=request.form['level']).first()
+        if check_availibility is not None:
+            flash("The data with this setting has been already exist")
+            return redirect(url_for('admin.examination_add'))
         examination = Examination()
         examination.name = request.form['name']
         examination.division_id = request.form['division']  
@@ -313,16 +361,14 @@ def examination_edit(id):
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
     examination = Examination.query.filter_by(id=id).first()
-    divisions = Division.query.all()
-    levels = Level.query.all()
     if request.method == 'POST':
+        print(request.form)
         examination.name = request.form['name']
-        examination.division_id = request.form['division']  
-        examination.level_id = request.form['level']
         db.session.add(examination)
         db.session.commit()
+        # return to admin route. function
         return redirect(url_for('admin.examination_data'))
-    return render_template('admin/examination/edit.html', examination=examination, divisions=divisions, levels=levels)
+    return render_template('admin/examination/edit.html', examination=examination)
 
 @login_required
 @admin.route('/examination/examination_delete/<id>', methods=['GET', 'POST'])
@@ -332,8 +378,7 @@ def examination_delete(id):
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
     examination = Examination.query.filter_by(id=id).first()
-    examination.status = False
-    db.session.add(examination)
+    db.session.delete(examination)
     db.session.commit()
     return redirect(url_for('admin.examination_data'))
 
@@ -472,6 +517,7 @@ def question_pdf_data(id):
     if request.method == "POST":
         _keyword= request.form['keyword']
     _search = "%{}%".format(_keyword)
+    directory = "/static/uploads/test/"
     get_exam = Examination.query.filter_by(id=id).first()
     division = Division.query.filter_by(id=get_exam.division_id).first()
     level = Level.query.filter_by(id=get_exam.level_id).first()
@@ -484,7 +530,7 @@ def question_pdf_data(id):
         if question_pdf.has_next else None
     prev_url = url_for('admin.question_data', page=question_pdf.prev_num) \
         if question_pdf.has_prev else None
-    return render_template('admin/master_test/index.html', quetions=question_pdf.items, level=level, division=division, get_exam=get_exam, exam_name=get_exam.name, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages))
+    return render_template('admin/master_test/index.html', quetions=question_pdf.items, level=level, division=division, get_exam=get_exam, exam_name=get_exam.name, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages),directory=directory)
 
 @login_required
 @admin.route('/question/question_pdf_add/<id>', methods=['GET', 'POST'])
@@ -499,22 +545,20 @@ def question_pdf_add(id):
     level = Level.query.filter_by(id=get_exam.level_id).first()
     if request.method == 'POST':
         file = request.files['file']
+        filename = file.filename
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(path, filename)
-        return "Ok"
-        # question = Pdf_Test()
-        # question.filename = request.form['name']
-        # question.instruction = request.form['division']
-        # db.session.add(question)
-        # db.session.commit()
-        return redirect(url_for('admin.question_data'))
+        timenow = datetime.utcnow()
+        time = timenow.strftime("%H%M%S")
+        filename_ = file.filename.replace(" ", "_")
+        file.save(os.path.join(apps.config['UPLOAD_PATH'],filename_))
+        question = Pdf_Test()
+        question.filename = filename_
+        question.instruction = request.form['instruction']
+        question.examination_id = id
+        db.session.add(question)
+        db.session.commit()
+        return redirect(url_for('admin.question_pdf_data', id=id))
         
     return render_template('admin/master_test/add.html', level=level, division=division, examination_id=id, exam_name=get_exam.name)
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

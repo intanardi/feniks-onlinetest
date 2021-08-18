@@ -29,10 +29,9 @@
             <tr>
                 <td>No</td>
                 <td>Name</td>
-                <td>Username</td>
-                <td>email</td>
                 <td>Phone</td>
                 <td>Division</td>
+                <td>Schedule</td>
                 <td>Level</td>
                 <td>Action</td>
             </tr>
@@ -44,15 +43,21 @@
                 <td>{{ count.value }}
                     {% set count.value = count.value + 1 %}
                 </td>
-                <td>{{ candidate.fullname }}</td>
-                <td>{{ candidate.username }}</td>
-                <td>{{ candidate.email }}</td>
+                <td>{{ candidate.name }}</td>
                 <td>{{ candidate.phone }}</td>
-                <td>{{ candidate.division.name }}</td>
-                <td>{{ candidate.level.name }}</td>
+                <td>{{ candidate.division }}</td>
+                <td> 
+                  {% if candidate.schedule is none %}
+                    <span class="text-danger">Not Set</span>
+                  {% else %}
+                    <span class="text-success">{{ candidate.schedule }}</span>
+                  {% endif %}
+                </td>
+                <td>{{ candidate.level }}</td>
                 <td>
                     <a href="{{ url_for('admin.candidate_edit', id=candidate.id) }}" class="btn btn-success"><i class="fa fa-pencil" title="Edit Data"></i></a>
                     <a href="" class="btn btn-danger delete-dialog-candidate" target-id="{{ candidate.id }}"><i class="fa fa-trash" title="Delete Data"></i></a>
+                    <a href="{{ url_for('admin.candidate_set_schedule', id=candidate.id) }}" class="btn btn-warning"><i class="fa fa-calendar text-white" title="Set Schedule"></i></a>
                 </td>
             </tr>
             {% endfor %}
@@ -61,25 +66,9 @@
     <div class="fixed-center">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
-              {% if prev_url %}
-              <li class="page-item">
-                <a class="page-link" href="{{ prev_url }}" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                  <span class="sr-only">Previous</span>
-                </a>
-              </li>
-              {% endif %}
               {% for num in range(num_pages) %}
                 <li class="page-item"><a class="page-link" href="data?page={{num+1}}">{{num+1}}</a></li>
               {% endfor %}
-              {% if next_url %}
-              <li class="page-item">
-                <a class="page-link" href="{{ next_url }}" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </li>
-              {% endif %}
             </ul>
         </nav>
     </div>

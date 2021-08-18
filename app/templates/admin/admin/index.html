@@ -40,9 +40,7 @@
             {% set count = namespace(value=1) %}
             {% for user in users %}
             <tr>
-                <td>{{ count.value }}
-                    {% set count.value = count.value + 1 %}
-                </td>
+                <td>{{ loop.index }}</td>
                 <td>{{ user.fullname }}</td>
                 <td>{{ user.division.name }}</td>
                 <td>{{ user.level.name }}</td>
