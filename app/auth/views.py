@@ -17,7 +17,7 @@ def login():
         login_user(user)
         if user.role.name.lower() == 'candidate':
             # return redirect(url_for('exam.index'))
-            return "halaman candidate"
+            return redirect(url_for('candidate.index'))
         return redirect(url_for('admin.index'))
     return render_template('login.html', form=form)
 

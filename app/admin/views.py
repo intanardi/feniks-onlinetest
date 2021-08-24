@@ -303,7 +303,7 @@ def candidate_delete(id):
 """
 
 @login_required
-@admin.route('/examination/examination_data', methods=['GET', 'POST'])
+@admin.route('/examination/data', methods=['GET', 'POST'])
 @csrf.exempt
 def examination_data():
     _keyword = ""
@@ -327,7 +327,7 @@ def examination_data():
 
 
 @login_required
-@admin.route('/examination/examination_add', methods=['GET', 'POST'])
+@admin.route('/examination/add', methods=['GET', 'POST'])
 @csrf.exempt
 def examination_add():
     # Check If user role is superadmin or admin
@@ -354,7 +354,7 @@ def examination_add():
     return render_template('admin/examination/add.html', levels=levels, divisions=divisions)
 
 @login_required
-@admin.route('/examination/examination_edit/<id>', methods=['GET', 'POST'])
+@admin.route('/examination/edit/<id>', methods=['GET', 'POST'])
 @csrf.exempt
 def examination_edit(id):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
@@ -371,7 +371,7 @@ def examination_edit(id):
     return render_template('admin/examination/edit.html', examination=examination)
 
 @login_required
-@admin.route('/examination/examination_delete/<id>', methods=['GET', 'POST'])
+@admin.route('/examination/delete/<id>', methods=['GET', 'POST'])
 @csrf.exempt
 def examination_delete(id):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:

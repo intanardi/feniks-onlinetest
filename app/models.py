@@ -260,6 +260,7 @@ class Candidate_Test(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     pdf_test_id = db.Column(db.Integer, db.ForeignKey('pdf_test.id'))
+    file_uploaded = db.Column(db.Text)
     time_test = db.Column(db.Time())
     status = db.Column(db.Boolean, default=True)
 

@@ -88,6 +88,13 @@ body {
     height: 100%;
   }
   
+  #main-2 {
+    font-size: 14px; /* Increased text to enable scrolling */
+    margin-top: 20px;
+    height: 100%;
+    background-color: #fff;
+  }
+  
   /* Add an active class to the active dropdown button */
 
   .arrow {

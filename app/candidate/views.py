@@ -8,34 +8,13 @@ from ..models import *
 import json
 
 ROWS_PER_PAGE = 3
-
-@login_required
-@candidate.route('/home', methods=['GET', 'POST'])
-def home():
-    return "home"
-
 @login_required
 @candidate.route('/', methods=['GET', 'POST'])
 @candidate.route('/index', methods=['GET', 'POST'])
+@candidate.route('/home', methods=['GET', 'POST'])
 @csrf.exempt
 def index():
-    _keyword = ""
-    if current_user.role_id not in [1,2]:
-        flash("You have no permision!")
-        return redirect(url_for('candidate.home'))
-    if request.method == "POST":
-        _keyword= request.form['keyword']
-    _search = "%{}%".format(_keyword)
-    page = request.args.get('page', 1, type=int)
-    total_rows = User.query.filter(User.role_id.in_(["3"]), User.status.is_(True), User.fullname.like(_search)).count()
-    boxsize = 3
-    num_pages = -(total_rows // -boxsize)
-    candidates = User.query.filter(User.role_id.in_(["3"]), User.status.is_(True), User.fullname.like(_search)).paginate(page=page, per_page=ROWS_PER_PAGE)
-    next_url = url_for('candidate.index', page=candidates.next_num) \
-        if candidates.has_next else None
-    prev_url = url_for('candidate.index', page=candidates.prev_num) \
-        if candidates.has_prev else None
-    return render_template('admin/candidate/index.html', candidates=candidates.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages))
+    return render_template('candidate/index.html')
     
 @login_required
 @candidate.route('/add', methods=['GET', 'POST'])

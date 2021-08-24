@@ -42,7 +42,7 @@ def create_app(config_name):
     app.register_blueprint(user_blueprint, url_prefix='/administrator/manage/user')
 
     from .candidate import candidate as candidate_blueprint
-    app.register_blueprint(candidate_blueprint, url_prefix='/administrator/manage/candidate')
+    app.register_blueprint(candidate_blueprint)
 
     from .question import question as question_blueprint
     app.register_blueprint(question_blueprint, url_prefix='/administrator/manage/questions')
