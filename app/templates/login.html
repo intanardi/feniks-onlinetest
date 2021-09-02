@@ -4,32 +4,54 @@
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/login.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome/css/font-awesome.min.css') }}">
 {% endblock %}
 {% block content %}
-<form action="" method="post" class="fixed-center">
-    {{ form.csrf_token }}
-    <div class="card" style="width: 28rem;">
-        <div class="card-header text-center">
+<form action="" method="post" class="fixed-center" id="feniks-form-login">
+    <div class="login-form">
+        <div class="text-center login-header text-white">
             User Login
         </div>
-        <div class="card-body">
-            <div class="form-group">
+        <div class="login-body">
+            
+            <div class="login-img-logo">
+                <img src="{{ url_for('static', filename='img/logo.jpeg') }}" alt="" class="img-logo-responsive">
+            </div>
+            <div class="flash-message text-center mb-2">
                 {% for message in get_flashed_messages() %}
                     <span class="text-danger">{{ message }}</span>
                 {% endfor %}
             </div>
             <div class="form-group">
-                {{form.username.label()}}
-                {{form.username(class="form-control", placeholder="Username")}}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text feniksbackground" id="basic-addon1"><i class="fa fa-user fa-sm text-white"></i></span>
+                    </div>
+                    <input type="text" name="username" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                </div>
             </div>
             <div class="form-group">
-                {{form.password.label()}}
-                {{form.password(class="form-control", placeholder="Password")}}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text feniksbackground" id="basic-addon1"><i class="fa fa-lock fa-sm text-white"></i></span>
+                    </div>
+                    <input type="password" name="password" class="form-control" placeholder="Password" aria-label="password" aria-describedby="basic-addon1">
+                </div>
             </div>
-            <div class="form-group">
-                {{form.submit(class="btn btn-success")}}
+            <div class="form-group pt-2">
+                <button type="submit" class="btn loginButton" id="feniks-submit-login">login</button>
             </div>
+        </div>
+        <div class="text-center login-footer text-white">
+            &copy; Copyright By Ardi Feniks
         </div>
       </div>
   </form>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
+    <script>
+    
+    </script>
 {% endblock %}

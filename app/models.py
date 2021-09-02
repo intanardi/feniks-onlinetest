@@ -20,14 +20,14 @@ def load_user(user_id):
 
 class Role(db.Model):
     id =  db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+    name = db.Column(db.String(64))
     users = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
         return '<Role %r>' % self.name
     
     def insert_static_data(self):
-        values = ['superadmin', 'admin', 'candidate']
+        values = ['admin', 'superadmin']
         for v in values:
             role = Role()
             role.name = v
@@ -37,8 +37,8 @@ class Role(db.Model):
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
     fullname = db.Column(db.String(128))
-    email = db.Column(db.String(64), unique=True, index=True)
-    username = db.Column(db.String(64), unique=True, index=True)
+    email = db.Column(db.String(64))
+    username = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
     address = db.Column(db.String(128))
     phone = db.Column(db.String(15))
@@ -101,29 +101,11 @@ class User(UserMixin,db.Model):
         
         return _dict
 
-
-class Candidate(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    fullname = db.Column(db.String(128))
-    email = db.Column(db.String(64), unique=True, index=True)
-    username = db.Column(db.String(64), unique=True, index=True)
-    password_hash = db.Column(db.String(128))
-    address = db.Column(db.String(128))
-    phone = db.Column(db.String(15))
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=3)
-    status = db.Column(db.Boolean, default=True)
-    
-
-    def insert(self, data):
-        candidate = Candidate()
-
-        return True
-
 class Level(db.Model):
     __tablename__ = "level"
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64))
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
     examinations = db.relationship('Examination', backref='level', lazy='dynamic')
     users = db.relationship('User', backref='level', lazy='dynamic')
 
@@ -131,7 +113,7 @@ class Level(db.Model):
         return '<Question_Level %r>' % self.name
     
     def insert_static_data(self):
-        values = ['SPV', 'Staff', 'All']
+        values = ['Staff', 'Senior', 'SPV']
         for v in values:
             level = Level()
             level.name = v
@@ -142,7 +124,7 @@ class Division(db.Model):
     __tablename__ = "division"
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64))
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
     examinations = db.relationship('Examination', backref='division', lazy='dynamic')
     users = db.relationship('User', backref='division', lazy='dynamic')
 
@@ -150,7 +132,7 @@ class Division(db.Model):
         return '<Division %r>' % self.name
     
     def insert_static_data(self):
-        values = ['Accounting', 'Audit' , 'Legal', 'HR', 'IT', 'All']
+        values = ['Accounting', 'Audit' , 'Legal', 'HR', 'IT',]
         for v in values:
             division = Division()
             division.name = v
@@ -162,8 +144,8 @@ class Examination(db.Model):
     name = db.Column(db.String(64))
     division_id = db.Column(db.Integer, db.ForeignKey('division.id'))
     level_id = db.Column(db.Integer, db.ForeignKey('level.id'))
-    is_multiple_choice = db.Column(db.Boolean, default=False)
-    status = db.Column(db.Boolean, default=True)
+    duration = db.Column(db.Time)
+    is_deleted = db.Column(db.Boolean, default=False)
     questions = db.relationship('Question', backref='examination', lazy='dynamic')
     choices = db.relationship('Multiple_Choice', backref='examination', lazy='dynamic')
     pdfs = db.relationship('Pdf_Test', backref='examination', lazy='dynamic')
@@ -175,7 +157,7 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     question = db.Column(db.Text())
     examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
         return '<Question %r>' % self.name
@@ -183,10 +165,10 @@ class Question(db.Model):
 class Multiple_Choice(db.Model):
     __tablename__ = "multiple_choice"
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(64), unique=True, index=True)
+    name = db.Column(db.String(64))
     examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
     is_correct = db.Column(db.Boolean, default=False)
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
         return '<Multiple_Choice %r>' % self.name
@@ -197,7 +179,7 @@ class Psikotest_Type(db.Model):
     __tablename__ = "psikotest_type"
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64))
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
     psikotests = db.relationship('Psikotest', backref='psikotest_type', lazy='dynamic')
 
     def __repr__(self):
@@ -216,7 +198,8 @@ class Psikotest(db.Model):
     filename = db.Column(db.String(128))
     instruction = db.Column(db.Text())
     psikotest_type_id = db.Column(db.Integer, db.ForeignKey('psikotest_type.id'))
-    status = db.Column(db.Boolean, default=True)
+    duration = db.Column(db.Time())
+    is_deleted = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
         return '<Psikotest %r>' % self.name
@@ -240,17 +223,17 @@ class Pdf_Test(db.Model):
     filename = db.Column(db.String(128))
     instruction = db.Column(db.Text())
     examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
-        return '<Pdf_Test %r>' % self.name
+        return '<Pdf_Test %r>' % self.filename
 
 class Candidate_Schedule_Test(db.Model):
     __tablename__ = "candidate_schedule_test"
     id = db.Column(db.Integer, primary_key = True)
     candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date_test = db.Column(db.DateTime())
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<Candidate_Schedule_Test %r>' % self.date_test
@@ -262,13 +245,10 @@ class Candidate_Test(db.Model):
     pdf_test_id = db.Column(db.Integer, db.ForeignKey('pdf_test.id'))
     file_uploaded = db.Column(db.Text)
     time_test = db.Column(db.Time())
-    status = db.Column(db.Boolean, default=True)
+    is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<Candidate_Test %r>' % self.name
-    
-    def insert_static_data(self):
-        values = ['psikotest', 'specific']
             
 
 # ======================= END STATIC MODELS ==========================

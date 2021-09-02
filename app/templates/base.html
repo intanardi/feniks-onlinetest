@@ -1,6 +1,7 @@
 {% extends "bootstrap/base.html" %}
 {% block head %}
 {{ super() }}
+<meta charset="UTF-8">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome/css/font-awesome.min.css') }}">
@@ -9,79 +10,124 @@
 <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/jquery-ui.theme.min.css') }}">
 <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
 <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/bootstrap-clockpicker.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% endblock %}
 {% block title %}Feniks Technology{% endblock %}
-{% block navbar %}
-{% if current_user.role_id in [1,2] %}
-<div class="sidenav">
-    <a href="{{ url_for('admin.index') }}">Home</a>
-    <button class="dropdown-btn">Master Data 
-      <i class="arrow"></i>
-    </button>
-    <div class="dropdown-container">
-      <a href="{{ url_for('admin.data') }}">Master User</a>
-      <a href="{{ url_for('admin.candidate_data') }}">Master Candidate</a>
-      <a href="{{ url_for('admin.examination_data') }}">Master Examination</a>
-      <a href="#">Result</a>
-      <a href="#">Test</a>
+<body>
+  {% block navbar %}
+  <div class="sidebar">
+    <div class="logo-details">
+      <img src="{{ url_for('static', filename='img/fenikslogo.png') }}" alt="" class="img-sidemenu-responsive" title="Phoenix">
+      <span class="logo_name">Phoenix</span>
     </div>
-    <a href="#setting">Settings</a>
-    <a href="#test">Test</a>
-    <a href="#contact">Profile</a>
-    <a href="{{ url_for('auth.logout') }}">logout</a>
-</div>
-<div class="navigation-header">
-  <div class="float-right mt-4 mb-2 mr-2">
-    Welcome, <b>{{current_user.fullname}}</b>
-  </div>
-</div>
-{% else %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Feniks</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
+    <ul class="nav-links">
+      {% if (current_user.role.name.lower() == "superadmin") or (current_user.role.name.lower() == "admin") %}
+      <li>
+        <a href="{{ url_for('admin.index') }}">
+          <i class='fa fa-th' ></i>
+          <span class="link_name">Dashboard</span>
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{{ url_for('admin.index') }}">Dashboard</a></li>
+        </ul>
+      </li>
+      <li>
+        <div class="icon-link">
+          <a href="#">
+            <i class='fa fa-database' ></i>
+            <span class="link_name sub-menu-name">Master</span>
+          </a>
+          <i class='fa fa-chevron-down fa-sm arrow' ></i>
         </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Master</a></li>
+          <li><a href="{{ url_for('admin.data') }}">Admin</a></li>
+          <li><a href="{{ url_for('admin.candidate_data') }}">Candidate</a></li>
+          <li><a href="{{ url_for('admin.examination_data') }}">Exam</a></li>
+        </ul>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="{{ url_for('auth.logout') }}">Logout</a>
+      <li>
+        <a href="#">
+          <i class='fa fa-book' ></i>
+          <span class="link_name">Test</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="#">Test</a></li>
+        </ul>
       </li>
-    </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+      <li>
+        <div class="icon-link">
+          <a href="#">
+            <i class='fa fa-cog' ></i>
+            <span class="link_name sub-menu-name">Setting</span>
+          </a>
+          <i class='fa fa-chevron-down fa-sm arrow' ></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">Setting</a></li>
+          <li><a href="#">Update Profile</a></li>
+          <li><a href="#">Update Password</a></li>
+        </ul>
+      </li>
+      <!-- <div class="profile-details">
+        <div class="profile-content">
+          <img src="{{url_for('static', filename='img/user/profile.jpg')}}" alt="profileImg">
+        </div>
+        <div class="name-job">
+          <div class="job">
+            {% if current_user.is_authenticated %}
+              {{ current_user.role.name }}
+            {% endif %}
+          </div>
+        </div>
+      </div> -->
+      {% else %}
+      <li>
+        <a href="{{ url_for('candidate.index') }}">
+          <i class='fa fa-home' ></i>
+          <span class="link_name">Home</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{{ url_for('candidate.index') }}">Home</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="{{ url_for('candidate.test') }}">
+          <i class='fa fa-book' ></i>
+          <span class="link_name">Test</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{{ url_for('candidate.test') }}">Test</a></li>
+        </ul>
+      </li>
+      {% endif %}
+      <li>
+        <a href="{{ url_for('auth.logout') }}">
+          <i class='fa fa-sign-out' ></i>
+          <span class="link_name">Logout</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="{{ url_for('auth.logout') }}">Logout</a></li>
+        </ul>
+      </li>
+  </ul>
   </div>
-</nav>
-{% endif %}
-{% endblock %}
-{% block content %}
-{% if current_user.role_id in [1,2] %}
-  <div id="main">
-{% else %}
-  <div id="main-2">
-{% endif %}
-    {% block page_content %}{% endblock %}
-</div>
-{% endblock %}
+  {% endblock %}
+  {% block content %}
+  <section class="home-section">
+    <div class="home-content">
+        <i class='fa fa-bars' ></i>
+        <div class="home-profile">
+          <span class="greeting-name">Hi,</span> <span class="profile-name">{{ current_user.fullname }}</span>
+        </div>
+    </div>
+    <div id="main">
+      {% block page_content %}{% endblock %}
+    </div>
+  </section>
+  {% endblock %}
+</body>
+</html>
 {% block scripts %}
     {{ super() }}
     <script type="text/javascript" src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
@@ -93,5 +139,27 @@
         $( "#datepicker" ).datepicker();
         $('.clockpicker').clockpicker();
       } );
+      // sidebar handler
+      let arrow = document.querySelectorAll(".arrow");
+      for (var i = 0; i < arrow.length; i++) {
+        arrow[i].addEventListener("click", (e)=>{
+      let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+      arrowParent.classList.toggle("showMenu");
+        });
+      }
+      let submenu = document.querySelectorAll("li");
+      console.log(submenu)
+      for (var x = 0; x < submenu.length; x++) {
+          submenu[x].addEventListener("click", (e) => {
+          let submenuParent = e.target.parentElement.parentElement.parentElement;
+          submenuParent.classList.toggle("showMenu");
+        });
+      }
+      let sidebar = document.querySelector(".sidebar");
+      let sidebarBtn = document.querySelector(".fa-bars");
+      sidebarBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("hidden");
+      });
+      // end of sidebar handler
     </script>
 {% endblock %}

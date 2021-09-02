@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Feniks - {% endblock %}
 {% block page_content %}
-  <div class="header-content">
-      <h4>Examination Data</h4>
-  </div>
   <div class="main-content">
-    <div class="main-header">
+    <div class="content-header mt-3 mb-3">
+      <h4>Examination Data</h4>
+    </div>
+      <div class="main-header mt-4 mb-4">
         <div class="row">
           <div class="col-md-6">
             <form action="" method="POST">
@@ -34,6 +34,7 @@
                 <td>name</td>
                 <td>division</td>
                 <td>level</td>
+                <td>Test Duration</td>
                 <td>Action</td>
             </tr>
         </thead>
@@ -47,16 +48,17 @@
                 <td>{{ exam.name }}</td>
                 <td>{{ exam.division.name }}</td>
                 <td>{{ exam.level.name }}</td>
+                <td>{{ exam.duration.strftime("%H:%M") }}</td>
                 <td>
-                    <a href="{{ url_for('admin.examination_edit', id=exam.id) }}" class="btn btn-success"><i class="fa fa-pencil"></i></a>
-                    <a href="" class="btn btn-danger delete-dialog-exam" target-id="{{ exam.id }}"><i class="fa fa-trash"></i></a>
-                    <a href="{{ url_for('admin.question_pdf_data', id=exam.id) }}" class="btn btn-warning text-white">Upload File</a>
+                    <a href="{{ url_for('admin.examination_edit', id=exam.id) }}" class="btn btn-success btn-sm" title="Edit"><i class="fa fa-pencil"></i></a>
+                    <a href="" class="btn btn-danger btn-sm delete-dialog" target-id="{{ exam.id }}" title="Delete"><i class="fa fa-trash"></i></a>
+                    <a href="{{ url_for('admin.question_pdf_data', id=exam.id) }}" class="btn feniksPurple btn-sm text-white" title="Upload"><i class="fa fa-upload"></i></a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div class="fixed-center">
+    <div class="pagination-center">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
               {% if prev_url %}
@@ -68,7 +70,7 @@
               </li>
               {% endif %}
               {% for num in range(num_pages) %}
-                <li class="page-item"><a class="page-link" href="examination_data?page={{num+1}}">{{num+1}}</a></li>
+                <li class="page-item"><a class="page-link" href="data?page={{num+1}}">{{num+1}}</a></li>
               {% endfor %}
               {% if next_url %}
               <li class="page-item">

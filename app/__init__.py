@@ -26,25 +26,28 @@ def create_app(config_name):
 
     login_manager.init_app(app)
 
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint)
+
     from .exam import exam as exam_blueprint
     app.register_blueprint(exam_blueprint, url_prefix='/candidate/exam')
 
     from .admin import admin as admin_blueprint
-    app.register_blueprint(admin_blueprint, url_prefix='/administrator')
-
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint, url_prefix='/main')
-
-    from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(admin_blueprint, url_prefix='/feniks/v1/administrator')
 
     from .user import user as user_blueprint
     app.register_blueprint(user_blueprint, url_prefix='/administrator/manage/user')
 
     from .candidate import candidate as candidate_blueprint
-    app.register_blueprint(candidate_blueprint)
+    app.register_blueprint(candidate_blueprint, url_prefix='/candidate')
 
     from .question import question as question_blueprint
     app.register_blueprint(question_blueprint, url_prefix='/administrator/manage/questions')
+
+    from .errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
 
     return app

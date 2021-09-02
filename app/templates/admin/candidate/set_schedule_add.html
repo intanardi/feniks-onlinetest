@@ -6,6 +6,7 @@
         <h4>
             Candidate Data
         </h4>
+        <hr>
         <form action="" method="POST">
             <div class="row">
                 <div class="col-md-6 col-sm-12">
@@ -27,14 +28,14 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label for="schedule">Date Schedule</label>
-                        <input type="text" class="form-control" name="date" id="datepicker" value="{{ schedule_date }}">
+                        <input type="text" class="form-control datepick" name="date" id="datepicker" value="{{ schedule_date }}">
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                         <label for="schedule">Time Schedule</label>
                         <div class="input-group clockpicker" data-placement="left" data-align="top" data-autoclose="true">
-                          <input type="text" class="form-control" name="time" value="{{ schedule_time }}">
+                          <input type="text" class="form-control clockpick" name="time" value="{{ schedule_time }}">
                         </div>
                       </div>
                       </div>
@@ -42,7 +43,7 @@
                 </div>
                 <div class="col-md-12">
                   <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary" disabled>Save</button>
                   </div>
                 </div>
               </div>
@@ -50,4 +51,26 @@
         
       </div>
 </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+      var datevalue = "";
+      var timevalue = "";
+      $(".datepick").on('change', function(e){
+        console.log("a");
+        datevalue  = e.target.value;
+        if(datevalue != ""){
+          $('button').prop("disabled", false);
+        }
+      });
+      $(".clockpick").on('change', function(e){
+        console.log("b");
+        timevalue = e.target.value;
+        if(timevalue != ""){
+          $('button').prop("disabled", false);
+        }
+      });
+      
+    </script>
 {% endblock %}

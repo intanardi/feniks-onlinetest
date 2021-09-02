@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %} Question Pdf{% endblock %}
 {% block page_content %}
-<div class="header-content">
-  <h4>Question PDF Data</h4>
-</div>
 <div class="main-content">
-    <div class="main-header">
+  <div class="content-header mt-3 mb-3">
+    <h4>Exam PDF Data</h4>
+  </div>
+    <div class="main-header mt-4 mb-4">
         <div class="row">
           <div class="col-md-6 col-sm-12">
             <div class="form-group">
@@ -57,16 +57,16 @@
             {% for question in quetions %}
             <tr>
                 <td>{{ question.instruction }}</td>
-                <td> <a href="{{ url_for('admin.open_pdf', filename=question.filename) }}">click to open</a></td>
+                <td><a href="{{ url_for('admin.open_pdf', filename=question.filename) }}">Preview PDF</a></td>
                 <td>
-                    <a href="{{ url_for('admin.question_edit', id=question.id) }}" class="btn btn-success">Edit</a>
-                    <a href="" class="btn btn-danger question-delete-confirmation" target-id="{{ question.id }}">Delete</a>
+                    <a href="{{ url_for('admin.question_pdf_edit', id=question.id) }}" class="btn btn-success btn-sm"><i class="fa fa-pencil"></i></a>
+                      <a href="" class="btn btn-danger btn-sm delete-pdf" target-id="{{ question.id }}" target-function= "admin.question_pdf_delete"><i class="fa fa-trash"></i></a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div class="fixed-center">
+    <div class="pagination-center">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
               {% if prev_url %}
@@ -92,4 +92,40 @@
         </nav>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+      $(".delete-pdf",).on("click", function (e) {
+        e.preventDefault();
+        console.log("sadjasdhdsauhuh")
+        const getId = $(this).attr("target-id");
+        const column_element = $(this).parent();
+        console.log(column_element.parent())
+        const res = window.confirm("Are you sure you want to delete this data ?");
+        if(!res){
+            console.log(1);
+        }else {
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('admin.question_pdf_delete', id=getId) }}"+getId,
+                data : JSON.stringify({
+                    "subject:title":"Test Name",
+                    "sampleSize" : 10,
+                    "name" : "delete"
+                  }),
+                  dataType: "json",
+                  contentType: "application/json",
+                  error: function(e) {
+                    console.log("error");
+                  },
+                success: function (response) {
+                    column_element.parent().hide(250)
+                }
+            });
+            return false;
+        }
+          
+  });
+    </script>
 {% endblock %}

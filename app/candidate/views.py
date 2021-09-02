@@ -6,77 +6,75 @@ from .forms import CandidateForm, LoginForm
 from .. import db, csrf
 from ..models import *
 import json
+from datetime import datetime
 
-ROWS_PER_PAGE = 3
+# current_time = now.strftime("%H:%M:%S")
+
+title = "Feniks CBT"
+
 @login_required
 @candidate.route('/', methods=['GET', 'POST'])
 @candidate.route('/index', methods=['GET', 'POST'])
 @candidate.route('/home', methods=['GET', 'POST'])
 @csrf.exempt
 def index():
-    return render_template('candidate/index.html')
-    
-@login_required
-@candidate.route('/add', methods=['GET', 'POST'])
-@csrf.exempt
-def add():
-    if current_user.role_id not in [1,2]:
-        flash("You have no permision!")
-        return redirect(url_for('candidate.home'))
-    divisions = Division.query.all()
-    levels = Level.query.all()
-    if request.method == 'POST':
-        print("submitted")
-        candidate = User()
-        if request.form['password'] != request.form['repassword']:
-            flash("Confirmation password sshould be a same")
-            return redirect(url_for('candidate.add'))
-        candidate.username = request.form['username']
-        candidate.email = request.form['email']  
-        candidate.fullname = request.form['fullname']
-        candidate.phone = request.form['phone'] 
-        candidate.address = request.form['address'] 
-        candidate.division_id = request.form['division'] 
-        candidate.level_id = request.form['level']
-        candidate.set_password(request.form['password'] )
-        db.session.add(candidate)
-        db.session.commit()
-        return redirect(url_for('candidate.index'))
-        
-    return render_template('admin/candidate/add.html', divisions=divisions, levels=levels)
+    return render_template('candidate/index.html', title=title)
 
 @login_required
-@candidate.route('/edit/<id>', methods=['GET', 'POST'])
+@candidate.route('/test', methods=['GET', 'POST'])
 @csrf.exempt
-def edit(id):
-    if current_user.role_id not in [1,2]:
-        flash("You have no permision!")
-        return redirect(url_for('candidate.home'))
-    divisions = Division.query.all()
-    levels = Level.query.all()
-    candidate = User.query.filter_by(id=id).first()
-    if request.method == 'POST':
-        candidate.username = request.form['username']
-        candidate.email = request.form['email']  
-        candidate.fullname = request.form['fullname']
-        candidate.phone = request.form['phone'] 
-        candidate.address = request.form['address']
-        candidate.division_id = request.form['division'] 
-        candidate.level_id = request.form['level']
-        db.session.add(candidate)
-        db.session.commit()
-        return redirect(url_for('candidate.index'))
-    return render_template('admin/candidate/edit.html', candidate=candidate, divisions=divisions, levels=levels)
-
-@login_required
-@candidate.route('/delete/<id>', methods=['GET', 'POST'])
-@csrf.exempt
-def delete(id):
-    if current_user.role_id not in [1,2]:
-        flash("You have no permision!")
-        return redirect(url_for('candidate.home'))
-    candidate = User.query.filter_by(id=id).first()
-    candidate.status = False
-    db.session.add(candidate)
-    db.session.commit()
-    return redirect(url_for('user.index'))
+def test():
+    message = None
+    status = None
+    time = datetime.now()
+    print("current time :")
+    print()
+    _date = time.strftime("%Y-%m-%d %H:%M:%S")
+    _time = time.strftime("%H:%M:%S")
+    date = datetime.strptime(_date, '%Y-%m-%d %H:%M:%S')
+    print(_date)
+    print(type(_date))
+    print("***")
+    print(date)
+    print(type(date))
+    print("--------------")
+    print()
+    print("schedule time :")
+    print()
+    schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=current_user.id).first()
+    print(schedule)
+    print("schedule ada di atas")
+    cand_date = ""
+    if schedule is not None:
+        _date_db = schedule.date_test.strftime("%Y-%m-%d %H:%M:%S")
+        # _time_db = schedule.date_test.strftime("%H:%M:%S")
+        date_db = datetime.strptime(_date_db, '%Y-%m-%d %H:%M:%S')
+        cand_date = schedule.date_test.strftime("%Y %m %d %H:%M:%S")
+        print()
+        print()
+        print("perbandingan :")
+        print("dari DB tanggal :")
+        print(date_db.date())
+        print("dari DB jam :")
+        print(date_db.time())
+        print("hari dibuka tanggal")
+        print(date.date())
+        print("hari dibuka jam")
+        print(date.time())
+        if date_db.date() == date.date():
+            if date.time() >= date_db.time():
+                message = "Anda sudah masuk waktu pengerjaan"
+                status = 00
+            elif date.time() < date_db.time():
+                message = "Waktu pengerjaan belum dimulai. dimulai pukul : "+ str(date_db.time())
+                status = 10
+        elif date_db.date() > date.date():
+            message = "Anda belum bisa mengikuti tes. Tanggal pengerjaan anda adalah "+ str(date_db.date().strftime('%D %M %Y')) +" pukul : "+ str(date_db.time())
+            status = 20
+        else:
+            message = "Maaf schedule anda sudah lewat waktu. anda tidak bisa untuk mengikuti tes"
+            status = 50
+    else:
+        message = "Anda belum memiliki schedule test"
+        status = 30
+    return render_template('candidate/test.html', title=title, schedule=schedule, cand_date=cand_date, current_time=time, message=message, status=status)

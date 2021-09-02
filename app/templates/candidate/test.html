@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block page_content %}
+  <div class="main-content">
+    <div class="content-header mt-3 mb-3">
+      <h4>Candidate Test</h4>
+    </div>
+        Welcome To The Test
+        time now is : {{current_time.date()}}
+        <p>Please read the instruction carefully! <br></p>
+        {% if schedule is not none %}
+            <p style="color: green;">{{ message }} </p>
+            {% if status == 00 %}
+              <a href="#" class="btn btn-success">Mulai Test</a>
+            {% else %}
+              Test akan dimulai dalam : <div id="demo" class="text-danger"></div>
+            {% endif %}
+        {% else %}
+            <p style="color: red;">schedule not set yet <br> {{ message }} </p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+      console.log(status)
+      if (status === 00){
+        console.log("success");
+      }
+      else if (status != 30) {
+        console.log("aaaaaa")
+        var timer;
+        var x = setInterval(function() {
+
+        // Get today's date and time
+        var now = new Date();
+        var myDate = new Date('{{cand_date}}');
+        console.log(now)
+        console.log(myDate)
+        // Find the distance between now and the count down date
+        var distance = myDate - now;
+          
+        // Time calculations for days, hours, minutes and seconds
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+        // Output the result in an element with id="demo"
+        document.getElementById("demo").innerHTML = days + " Hari " + hours + " Jam "
+        + minutes + " Menit " + seconds + " Detik ";
+          
+        // If the count down is over, write some text 
+        if (distance < 0) {
+          clearInterval(x);
+          document.getElementById("demo").innerHTML = "Mulai";
+          location.reload();
+        }
+        }, 1000);
+      }
+    </script>
+{% endblock %}

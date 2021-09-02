@@ -7,12 +7,14 @@ from .. import db
 from ..models import User
 
 directory = "/static/pdf/psikotest/soal_cfit.pdf"
+ADMIN_PERMISSION_LIST = [1,2]
 
 @main.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    # print(type(test_time))
-    return render_template('index.html')
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        return redirect(url_for('candidate.index'))
+    return redirect(url_for('admin.index'))
 
 @main.route('/test/psikotest', methods=['GET', 'POST'])
 @login_required

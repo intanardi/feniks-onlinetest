@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %} user List {% endblock %}
 {% block page_content %}
-<div class="header-content">
-  <h4>User Data</h4>
-</div>
 <div class="main-content">
-    <div class="main-header">
+  <div class="content-header mt-3 mb-3">
+    <h4>Admin Data</h4>
+  </div>
+    <div class="main-header mt-4 mb-4">
         <div class="row">
           <div class="col-md-6">
             <form action="" method="POST">
@@ -44,7 +44,7 @@
             {% for user in users %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td>{{ user.fullname }}</td>
+                <td>   <a href="{{ url_for('admin.view', id=user.id) }}" title="view">{{ user.fullname }}</a> </td>
                 <td>{{ user.division.name }}</td>
                 <td>{{ user.level.name }}</td>
                 <td>{{ user.email }}</td>
@@ -53,15 +53,16 @@
                   {% if current_user.role_id != 1 %}
                     <span class="text-danger">NO ACCESS</span>
                   {% else %}
-                    <a href="{{ url_for('admin.edit', id=user.id) }}" class="btn btn-success" title="Edit Data"><i class="fa fa-pencil"></i></a>
-                    <a href="" class="btn btn-danger delete-dialog" target-id="{{ user.id }}" title="Delete Data" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash"></i></a>
+                    <a href="{{ url_for('admin.edit', id=user.id) }}" class="btn btn-success btn-sm" title="Edit Data"><i class="fa fa-pencil"></i></a>
+                    <a href="" class="btn btn-danger btn-sm delete-dialog" target-id="{{ user.id }}" title="Delete Data" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash text-white"></i></a>
+                    <a href="{{ url_for('admin.admin_set_password', id=user.id) }}" class="btn btn-warning btn-sm" title="Change Password"><i class="fa fa-unlock text-white"></i></a>
                   {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div class="fixed-center">
+    <div class="pagination-center">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
               {% if prev_url %}
