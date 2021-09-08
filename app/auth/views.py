@@ -9,7 +9,7 @@ from .forms import LoginForm
 @csrf.exempt
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('user.index'))
+        return redirect(url_for('main.index'))
     if request.method == 'POST':
         print(request.form['username'])
         user = User.query.filter_by(username = request.form['username']).first()

@@ -43,16 +43,17 @@
           <li><a class="link_name" href="#">Master</a></li>
           <li><a href="{{ url_for('admin.data') }}">Admin</a></li>
           <li><a href="{{ url_for('admin.candidate_data') }}">Candidate</a></li>
-          <li><a href="{{ url_for('admin.examination_data') }}">Exam</a></li>
+          <li><a href="{{ url_for('admin.examination_data') }}">Psikotest</a></li>
+          <li><a href="{{ url_for('admin.examination_data') }}">Test</a></li>
         </ul>
       </li>
       <li>
         <a href="#">
           <i class='fa fa-book' ></i>
-          <span class="link_name">Test</span>
+          <span class="link_name">Blank</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Test</a></li>
+          <li><a class="link_name" href="#">Blank</a></li>
         </ul>
       </li>
       <li>
@@ -65,8 +66,8 @@
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Setting</a></li>
-          <li><a href="#">Update Profile</a></li>
-          <li><a href="#">Update Password</a></li>
+          <li><a href="{{ url_for('admin.admin_update_profile', id=current_user.id) }}">Update Profile</a></li>
+          <li><a href="{{ url_for('admin.admin_change_password', id=current_user.id) }}">Update Password</a></li>
         </ul>
       </li>
       <!-- <div class="profile-details">

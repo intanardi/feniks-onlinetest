@@ -170,9 +170,6 @@ def view(id):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
-    if current_user.role_id != 1:
-        flash("You have no permision!")
-        return redirect(url_for('admin.index'))
     user = User.query.filter_by(id=id).first()
     roles = Role.query.all()
     divisions = Division.query.all()
@@ -199,6 +196,59 @@ def admin_set_password(id):
         db.session.commit()
         return redirect(url_for('admin.data'))
     return render_template('admin/admin/set_password.html', user=user, title=title)
+
+@admin.route('/admin_update_profile/<id>', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def admin_update_profile(id):
+    user = User.query.filter_by(id=id).first()
+    if int(current_user.id) != int(id):
+        flash("Page Error")
+        return redirect(url_for("admin.index"))
+    if request.method == "POST":
+        if  'roles' in request.form:
+            user.role_id = int(request.form['roles'])
+        if  'division' in request.form:
+            user.division_id = int(request.form['division'])
+        if  'level' in request.form:
+            user.level_id = int(request.form['level'])
+        check_user = User.query.filter(User.id != id, User.is_deleted.is_(False)).all()
+        for c in check_user:
+            if request.form['email'].lower() == c.email:
+                flash("Email sudah ada!")
+                return redirect(url_for('admin.edit', id=id))
+            if request.form['phone'].lower() == c.phone:
+                flash("Phone sudah ada!")
+                return redirect(url_for('admin.edit', id=id))
+        user.email = request.form['email']  
+        user.fullname = request.form['fullname']
+        user.phone = request.form['phone'] 
+        user.address = request.form['address'] 
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('admin.data'))
+    return render_template('admin/admin/update_profile.html', user=user, title=title)
+
+@admin.route('/admin_change_password/<id>', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def admin_change_password(id):
+    user = User.query.filter_by(id=id).first()
+    if int(current_user.id) != int(id):
+        flash("Page Error")
+        return redirect(url_for("admin.index"))
+    if request.method == "POST":
+        if request.form['password'] != request.form['repassword'] :
+            flash("You type a different password confirmation!")
+            return redirect(url_for('admin.admin_change_password', id=id))
+        if user.check_password(request.form['oldpassword']) == False:
+            flash("Old password is wrong!")
+            return redirect(url_for('admin.admin_change_password', id=id))
+        user.set_password(request.form['password'])
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('admin.data'))
+    return render_template('admin/admin/admin_change_password.html', user=user, title=title)
 
 @admin.route('/delete/<id>', methods=['GET', 'POST'])
 @csrf.exempt
@@ -503,7 +553,6 @@ def examination_delete(id):
     db.session.delete(examination)
     db.session.commit()
     return redirect(url_for('admin.examination_data'))
-
 """
     =====================================================
                     END OF EXAMINATION MODULE
@@ -512,7 +561,41 @@ def examination_delete(id):
 
 """
     =====================================================
-                    QUESTION MODULE
+                    PSIKOTEST MODULE
+    =====================================================
+"""
+@admin.route('/psikotest/data', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def psikotest_data():
+    page = request.args.get('page', 1, type=int)
+    _keyword = ""
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    if request.method == "POST":
+        _keyword= request.form['keyword']
+        page = 1
+    _search = "%{}%".format(_keyword)
+    total_rows = Psikotest.query.filter(Psikotest.is_deleted.is_(False)).count()
+    boxsize = ROWS_PER_PAGE
+    num_pages = -(total_rows // -boxsize)
+    psikotest = Psikotest.query.filter(Psikotest.is_deleted.is_(False)).paginate(page=page, per_page=ROWS_PER_PAGE)
+    next_url = url_for('admin.examination_data', page=psikotest.next_num) \
+        if psikotest.has_next else None
+    prev_url = url_for('admin.examination_data', page=psikotest.prev_num) \
+        if psikotest.has_prev else None
+    return render_template('admin/psikotest/index.html', psikotests=psikotest.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages))
+
+"""
+    =====================================================
+                    END OF PSIKOTEST MODULE
+    =====================================================
+"""
+
+"""
+    =====================================================
+                    QUESTION MODULE (V2)
     =====================================================
 """
 

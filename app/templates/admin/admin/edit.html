@@ -2,8 +2,11 @@
 {% block title %} Edit Feniks User {% endblock %}
 {% block page_content %}
 <div class="main-content">
+    <div class="row">
+        <div class="col-6"><h3>Edit Admin</h3></div>
+        <div class="col-6 float-right"><button class="btn btn-secondary backButton float-right">Back</button></div>
+    </div>
     <div class="main-header mt-3 mb-3">
-        <h3>Edit Feniks User</h3>
         {% for message in get_flashed_messages() %}
             <span class="text-danger">{{ message }}</span>
         {% endfor %}
@@ -59,7 +62,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <button class="btn btn-primary" type="submit">Save</button>
+                <button class="btn btn-primary mr-2" type="submit">Save</button>
             </div>
         </div>
  </form>

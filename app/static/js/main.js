@@ -57,6 +57,10 @@ $(".duration-check",).on("keydown", function (e) {
     }
 });
 
+$(".backButton").click(function(){
+    window.history.go(-1);
+});
+
 // document.addEventListener("keyup", function (e) {
 //     var keyCode = e.keyCode ? e.keyCode : e.which;
 //             if (keyCode == 44) {

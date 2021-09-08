@@ -24,11 +24,12 @@ def convert_in_minutes(time):
     time_split = time.split(":")
     var_hour = int(time_split[0])
     var_minute = int(time_split[1])
-
+    fix_minutes = 0
     if var_hour!= 0:
         minutes = 60
         for i in range(1, var_hour):
             minutes +=60
+        fix_minutes = var_minute+minutes
 
-    duration_in_minutes = var_minute+minutes
+    duration_in_minutes = var_minute+fix_minutes
     return duration_in_minutes

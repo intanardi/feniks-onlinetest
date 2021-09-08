@@ -4,6 +4,10 @@
 <div class="main-content">
     <div class="content-header mt-3 mb-3">
       <h4>Dashboard</h4>
+      <hr>
+      {% for message in get_flashed_messages() %}
+        <span class="text-danger">{{ message }}</span>
+      {% endfor %}
     </div>
     <div class="mt-3 mb-3">
         <div class="row">
