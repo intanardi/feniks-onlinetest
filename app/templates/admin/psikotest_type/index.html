@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %} {{ title }} {% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block page_content %}
   <div class="main-content">
     <div class="content-header mt-3 mb-3">
-      <h4>Examination Data</h4>
+      <h4>Psikotest Data</h4>
     </div>
       <div class="main-header mt-4 mb-4">
         <div class="row">
@@ -20,7 +20,7 @@
             </form>
           </div>
           <div class="col-md-6">
-            <a href="{{ url_for('admin.examination_add') }}" class="btn btn-primary float-right">Add New</a>
+            <a href="{{ url_for('admin.psikotest_type_add') }}" class="btn btn-primary float-right">Add New</a>
           </div>
         </div>
       </div>
@@ -31,28 +31,24 @@
         <thead class="">
             <tr>
                 <td>No</td>
-                <td>name</td>
-                <td>division</td>
-                <td>level</td>
-                <td>Test Duration</td>
+                <td>Psikotest Name</td>
+                <td>Preliminary</td>
                 <td>Action</td>
             </tr>
         </thead>
         <tbody>
             {% set count = namespace(value=1) %}
-            {% for exam in examinations %}
+            {% for psikotest in psikotests %}
             <tr>
                 <td>{{ count.value }}
                     {% set count.value = count.value + 1 %}
                 </td>
-                <td>{{ exam.name }}</td>
-                <td>{{ exam.division.name }}</td>
-                <td>{{ exam.level.name }}</td>
-                <td>{{ exam.duration.strftime("%H:%M") }}</td>
+                <td>{{ psikotest.name }}</td>
+                <td>{{ psikotest.preliminary }}</td>
                 <td>
-                    <a href="{{ url_for('admin.examination_edit', id=exam.id) }}" class="btn btn-success btn-sm" title="Edit"><i class="fa fa-pencil"></i></a>
-                    <a href="" class="btn btn-danger btn-sm delete-dialog" target-id="{{ exam.id }}" title="Delete"><i class="fa fa-trash"></i></a>
-                    <a href="{{ url_for('admin.question_pdf_data', id=exam.id) }}" class="btn feniksPurple btn-sm text-white" title="Upload"><i class="fa fa-list-alt"></i></a>
+                    <a href="{{ url_for('admin.psikotest_type_edit', id=psikotest.id) }}" class="btn btn-success btn-sm" title="Edit"><i class="fa fa-pencil"></i></a>
+                    <a href="" class="btn btn-danger btn-sm delete-dialog" target-id="{{ psikotest.id }}" title="Delete"><i class="fa fa-trash"></i></a>
+                    <a href="{{ url_for('admin.psikotest_data', id=psikotest.id) }}" class="btn feniksPurple btn-sm text-white" title="PDF List"><i class="fa fa-list-alt"></i></a>
                 </td>
             </tr>
             {% endfor %}

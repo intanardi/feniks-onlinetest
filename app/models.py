@@ -61,9 +61,7 @@ class User(UserMixin,db.Model):
     
     def insert_static_data(self):
         values = [
-            { "email" : "example2@gmail.com", "username" :"ardipramanova", "password": "ardiziermedia123", "role_id": 1 },
-            { "email" : "example1@gmail.com", "username" :"dhinifeniks", "password": "dhinimedia123", "role_id": 2 },
-            { "email" : "example3@gmail.com", "username" :"ayufeniks", "password": "ayumedia123", "role_id": 2 }
+            { "email" : "example3@gmail.com", "username" :"ardi", "password": "123456", "role_id": 1 }
             ]
         for v in values:
             user = User()
@@ -179,6 +177,7 @@ class Psikotest_Type(db.Model):
     __tablename__ = "psikotest_type"
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64))
+    preliminary = db.Column(db.Text)
     is_deleted = db.Column(db.Boolean, default=False)
     psikotests = db.relationship('Psikotest', backref='psikotest_type', lazy='dynamic')
 
@@ -195,8 +194,8 @@ class Psikotest_Type(db.Model):
 
 class Psikotest(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    filename = db.Column(db.String(128))
-    instruction = db.Column(db.Text())
+    test_filename = db.Column(db.String(128))
+    instruction_filename = db.Column(db.String(128))
     psikotest_type_id = db.Column(db.Integer, db.ForeignKey('psikotest_type.id'))
     duration = db.Column(db.Time())
     is_deleted = db.Column(db.Boolean, default=False)

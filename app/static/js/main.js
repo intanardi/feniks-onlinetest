@@ -19,9 +19,9 @@ $( document ).ready(function() {
     const getId = $(this).attr("target-id");
     const column_element = $(this).parent();
     const res = window.confirm("Are you sure you want to delete this data ?");
+    e.preventDefault();
     if(!res){
         console.log(1);
-        e.preventDefault();
     }else {
         $.ajax({
             type: "POST",
@@ -35,7 +35,6 @@ $( document ).ready(function() {
                 console.log(123)
             }
         });
-        console.log(url)
         return false;
     }
             

@@ -5,11 +5,13 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flask_login import LoginManager
+from flask_ckeditor import CKEditor
 
 bootstrap = Bootstrap()
 mail = Mail()
 db = SQLAlchemy()
 csrf = CSRFProtect()
+ckeditor = CKEditor()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
@@ -23,6 +25,7 @@ def create_app(config_name):
     bootstrap.init_app(app)
     mail.init_app(app)
     db.init_app(app)
+    ckeditor.init_app(app)
 
     login_manager.init_app(app)
 

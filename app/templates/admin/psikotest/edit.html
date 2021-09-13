@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block page_content %}
+<div class="main-content">
+    <div class="row mt-3 mb-3">
+        <div class="col-6"><h3>Add PDF Test File</h3></div>
+        <div class="col-6 float-right"><button class="btn btn-secondary backButton float-right">Back</button></div>
+    </div>
+    <div class="main-header">
+        {% for message in get_flashed_messages() %}
+            <span class="text-danger">{{ message }}</span>
+        {% endfor %}
+        <hr>
+    </div>
+    <form action="" method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="name">Psikotest</label>
+                    <input type="text" class="form-control" name="name" value="{{ psikotest_type.name }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="inputpdf">Instruction File</label>
+                    <input type="file" class="form-control" name="instruction_file" value="{{ psikotest.instruction_filename }}">
+                </div>
+                <div class="form-group">
+                    <label for="inputpdf">Test File</label>
+                    <input type="file" class="form-control" name="test_file" value="{{ psikotest.test_filename }}">
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control duration-check" placeholder="Duration Time" name="minutes" value="{{ minutes }}">
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="basic-addon2">Minutes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
