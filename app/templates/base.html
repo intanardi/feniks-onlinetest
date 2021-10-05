@@ -48,15 +48,6 @@
         </ul>
       </li>
       <li>
-        <a href="#">
-          <i class='fa fa-book' ></i>
-          <span class="link_name">Blank</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Blank</a></li>
-        </ul>
-      </li>
-      <li>
         <div class="icon-link">
           <a href="#">
             <i class='fa fa-cog' ></i>
@@ -66,8 +57,9 @@
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Setting</a></li>
-          <li><a href="{{ url_for('admin.admin_update_profile', id=current_user.id) }}">Update Profile</a></li>
+          <li><a href="{{ url_for('admin.update_profile', id=current_user.id) }}">Update Profile</a></li>
           <li><a href="{{ url_for('admin.admin_change_password', id=current_user.id) }}">Update Password</a></li>
+          <li><a href="{{ url_for('admin.data_global_setting') }}">Global Setting</a></li>
         </ul>
       </li>
       <!-- <div class="profile-details">
@@ -135,7 +127,9 @@
     <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/jquery-ui.min.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap-clockpicker.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
     <script>
+
         $( function() {
         $( "#datepicker" ).datepicker();
         $('.clockpicker').clockpicker();

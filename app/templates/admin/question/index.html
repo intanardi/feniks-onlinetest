@@ -56,12 +56,9 @@
             </tr>
         </thead>
         <tbody>
-            {% set count = namespace(value=1) %}
             {% for question in quetions %}
             <tr>
-                <td>{{ count.value }}
-                    {% set count.value = count.value + 1 %}
-                </td>
+                <td>{{ loop.index + start }}</td>
                 <td>{{ question.name }}</td>
                 <td>{{ question.question }}</td>
                 <td>{{ question.division.name }}</td>

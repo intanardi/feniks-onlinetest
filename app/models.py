@@ -1,6 +1,6 @@
 from flask_login.utils import _secret_key
 from sqlalchemy.orm import backref
-from app import create_app, db
+from app import candidate, create_app, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import login_manager
@@ -45,10 +45,12 @@ class User(UserMixin,db.Model):
     division_id = db.Column(db.Integer, db.ForeignKey('division.id'))
     level_id = db.Column(db.Integer, db.ForeignKey('level.id'))
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), default=3)
+    added_time = db.Column(db.Date())
+    last_login = db.Column(db.DateTime())
     is_deleted = db.Column(db.Boolean, default=False)
     status = db.Column(db.Boolean, default=True)
-    # canidate_schedules = db.relationship('Candidate_Schedule_Test', backref='user', lazy='dynamic')
-    # candidate_tests = db.relationship('Candidate_Test', backref='user', lazy='dynamic')
+    
+    # Candidate_Psikotest_Schedules = db.relationship('Candidate_Psikotest_Schedule', backref='user', lazy='dynamic')
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -143,13 +145,28 @@ class Examination(db.Model):
     division_id = db.Column(db.Integer, db.ForeignKey('division.id'))
     level_id = db.Column(db.Integer, db.ForeignKey('level.id'))
     duration = db.Column(db.Time)
+    timedelta_duration = db.Column(db.Float)
     is_deleted = db.Column(db.Boolean, default=False)
     questions = db.relationship('Question', backref='examination', lazy='dynamic')
     choices = db.relationship('Multiple_Choice', backref='examination', lazy='dynamic')
-    pdfs = db.relationship('Pdf_Test', backref='examination', lazy='dynamic')
+    pdfs = db.relationship('Examination_Detail', backref='examination', lazy='dynamic')
     
     def __repr__(self):
         return '<Examination %r>' % self.name
+
+class Examination_Detail(db.Model):
+    __tablename__ = "examination_detail"
+    id = db.Column(db.Integer, primary_key = True)
+    filename = db.Column(db.String(128))
+    name = db.Column(db.String(128))
+    duration = db.Column(db.Time())
+    timedelta_duration = db.Column(db.Float)
+    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
+    is_deleted = db.Column(db.Boolean, default=False)
+    Candidate_Main_Schedules = db.relationship('Candidate_Main_Schedule', backref='examination_detail', lazy='dynamic')
+    
+    def __repr__(self):
+        return '<Examination_Detail %r>' % self.name
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -196,12 +213,15 @@ class Psikotest(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     test_filename = db.Column(db.String(128))
     instruction_filename = db.Column(db.String(128))
+    alert = db.Column(db.String(128))
     psikotest_type_id = db.Column(db.Integer, db.ForeignKey('psikotest_type.id'))
     duration = db.Column(db.Time())
+    timedelta_duration = db.Column(db.Float)
     is_deleted = db.Column(db.Boolean, default=False)
+    Candidate_Psikotest_Schedules = db.relationship('Candidate_Psikotest_Schedule', backref='psikotest', lazy='dynamic')
     
     def __repr__(self):
-        return '<Psikotest %r>' % self.name
+        return '<Psikotest %r>' % self.instruction_filename
     
     def insert_static_data(self):
         values = [
@@ -216,17 +236,6 @@ class Psikotest(db.Model):
             db.session.add(p)
             db.session.commit()
 
-class Pdf_Test(db.Model):
-    __tablename__ = "pdf_test"
-    id = db.Column(db.Integer, primary_key = True)
-    filename = db.Column(db.String(128))
-    instruction = db.Column(db.Text())
-    examination_id = db.Column(db.Integer, db.ForeignKey('examination.id'))
-    is_deleted = db.Column(db.Boolean, default=False)
-    
-    def __repr__(self):
-        return '<Pdf_Test %r>' % self.filename
-
 class Candidate_Schedule_Test(db.Model):
     __tablename__ = "candidate_schedule_test"
     id = db.Column(db.Integer, primary_key = True)
@@ -237,18 +246,86 @@ class Candidate_Schedule_Test(db.Model):
     def __repr__(self):
         return '<Candidate_Schedule_Test %r>' % self.date_test
 
-class Candidate_Test(db.Model):
-    __tablename__ = "candidate_test"
+class Candidate_Psikotest_Schedule(db.Model):
+    __tablename__ = "candidate_psikotest_schedule"
     id = db.Column(db.Integer, primary_key = True)
     candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    pdf_test_id = db.Column(db.Integer, db.ForeignKey('pdf_test.id'))
-    file_uploaded = db.Column(db.Text)
-    time_test = db.Column(db.Time())
+    psikotest_id = db.Column(db.Integer, db.ForeignKey('psikotest.id'))
+    started_time = db.Column(db.DateTime())
+    status = db.Column(db.Boolean, default=False)
+    flag = db.Column(db.Boolean, default=False)
     is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return '<Candidate_Test %r>' % self.name
-            
+        return '<Candidate_Psikotest_Schedule %r>' % self.candidate_id
+
+class Candidate_Main_Schedule(db.Model):
+    __tablename__ = "candidate_main_schedule"
+    id = db.Column(db.Integer, primary_key = True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    division_test_id = db.Column(db.Integer, db.ForeignKey('examination_detail.id'))
+    started_time = db.Column(db.DateTime())
+    status = db.Column(db.Boolean, default=False)
+    flag = db.Column(db.Boolean, default=False)
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<Candidate_Main_Schedule %r>' % self.candidate_id
+
+class Test_Type(db.Model):
+    __tablename__ = "test_type"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(64))
+    is_deleted = db.Column(db.Boolean, default=False)
+    # test_results = db.relationship('Candidate_Test_Result', backref='test_type', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Test_Type %r>' % self.name
+    
+    def insert_static_data(self):
+        values = ['Psikotest', 'Main Test']
+        for v in values:
+            obj = Test_Type()
+            obj.name = v
+            db.session.add(obj)
+            db.session.commit()
+
+class Candidate_Test_Result(db.Model):
+    __tablename__ = "candidate_test_result"
+    id = db.Column(db.Integer, primary_key = True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    test_type = db.Column(db.Integer, db.ForeignKey('test_type.id'))
+    filename = db.Column(db.String(128))
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<Candidate_Main_Schedule %r>' % self.candidate_id
+
+class Global_Setting(db.Model):
+    __tablename__ = "global_setting"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(64))
+    setting_code = db.Column(db.Integer)
+    variable = db.Column(db.String(32))
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    # code 1 total test duration
+
+    def insert_static_data():
+        values = [
+            { "name" : "total test duration", "setting_code" : 1, "variable" : "120"}
+            ]
+        for v in values:
+            gs = Global_Setting()
+            gs.name = v['name']
+            gs.setting_code = v['setting_code']
+            gs.variable = v['variable']
+            db.session.add(gs)
+            db.session.commit()
+
+
+    def __repr__(self):
+        return '<Candidate_Psikotest_Schedule %r>' % self.name           
 
 # ======================= END STATIC MODELS ==========================
 
@@ -262,4 +339,6 @@ def initialize_data():
     User().insert_static_data()
     Level().insert_static_data()
     Division().insert_static_data()
+    Global_Setting.insert_static_data()
     Psikotest_Type().insert_static_data()
+    Test_Type().insert_static_data()

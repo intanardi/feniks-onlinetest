@@ -2,34 +2,37 @@
 {% block title %} {{title}} {% endblock %}
 {% block page_content %}
   <div class="main-content">
-    <div class="content-header mt-3 mb-3">
+    <div class="content-header mt-3 mb-5">
       <h4>Candidate Test</h4>
     </div>
-        Welcome To The Test
-        time now is : {{current_time.date()}}
-        <p>Please read the instruction carefully! <br></p>
-        {% if schedule is not none %}
-            <p style="color: green;">{{ message }} </p>
-            {% if status == 00 %}
-              <a href="#" class="btn btn-success">Mulai Test</a>
-            {% else %}
-              Test akan dimulai dalam : <div id="demo" class="text-danger"></div>
-            {% endif %}
-        {% else %}
-            <p style="color: red;">schedule not set yet <br> {{ message }} </p>
-        {% endif %}
+    <div class="text-center">
+      <!-- {{ status }} -->
+      {% if schedule is not none %}
+          <p>Anda sudah masuk ke waktu tes. Tes terdiri dari <b>Psikotest</b> kemudian dilanjutkan dengan <b>Tes utama,</b><br> berdasarkan divisi dan level yang anda lamar. Silahkan klik <b>"Mulai Test"</b>!</p>
+          {% if status == 00 %}
+            <a href="{{ url_for('candidate.save_test_detail') }}" class="btn btn-success">Mulai Test</a>
+          {% else %}
+            Test akan dimulai dalam : <div id="demo" class="text-danger"></div>
+          {% endif %}
+      {% else %}
+          <p style="color: red;">schedule not set yet <br> {{ message }} </p>
+      {% endif %}
+    </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
     <script>
+      var status = "{{ status }}";
       console.log(status)
-      if (status === 00){
+      if (status === "0"){
         console.log("success");
       }
-      else if (status != 30) {
-        console.log("aaaaaa")
+      else if (status == "50") {
+        console.log("STOP")
+      }
+      else if (status != "30") {
         var timer;
         var x = setInterval(function() {
 
@@ -45,17 +48,16 @@
         var days = Math.floor(distance / (1000 * 60 * 60 * 24));
         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-          
-        // Output the result in an element with id="demo"
-        document.getElementById("demo").innerHTML = days + " Hari " + hours + " Jam "
-        + minutes + " Menit " + seconds + " Detik ";
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);  
           
         // If the count down is over, write some text 
         if (distance < 0) {
           clearInterval(x);
-          document.getElementById("demo").innerHTML = "Mulai";
-          location.reload();
+          window.location.href = '{{ url_for("candidate.test") }}';
+        } else {
+          // Output the result in an element with id="demo"
+          document.getElementById("demo").innerHTML = days + " Hari " + hours + " Jam "
+          + minutes + " Menit " + seconds + " Detik ";
         }
         }, 1000);
       }

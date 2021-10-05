@@ -40,12 +40,9 @@
             </tr>
         </thead>
         <tbody>
-            {% set count = namespace(value=1) %}
             {% for candidate in candidates %}
             <tr>
-                <td>{{ count.value }}
-                    {% set count.value = count.value + 1 %}
-                </td>
+                <td>{{ loop.index + start }}</td>
                 <td><a href="{{ url_for('admin.candidate_view', id=candidate.id) }}" title="view">{{ candidate.name }}</a></td>
                 <td>{{ candidate.phone }}</td>
                 <td>{{ candidate.division }}</td>

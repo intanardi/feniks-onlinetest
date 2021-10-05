@@ -1,5 +1,10 @@
 $( document ).ready(function() {
     // START SCRIPT
+
+    document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+    }, false);
+
     $( "#repasswordF, #passwordF" ).keyup(function(e) {
         var password = $("#passwordF").val();
         var confirm_password = $("#repasswordF").val();
@@ -14,6 +19,28 @@ $( document ).ready(function() {
                $("#password-message").text('Password Validated !');
             }
       });
+    
+    $(".confirmation-candidate").on("click", function (e) {
+        const res = window.confirm("Anda yakin sudah mengerti ?");
+        e.preventDefault();
+        if(!res){
+            console.log(1);
+        }else {
+            $.ajax({
+                type: "POST",
+                url: "update_status_psikotest/"+ $(this).attr("target_candidate_id"),
+                data: {
+                    'name': 'delete-dialog',
+                    'value': $(this).attr("target-id")
+                },
+                success: function (response) {
+                    console.log(response)
+                    window.location.href = response;
+                }
+            });
+        }
+                
+        });
     
     $(".delete-dialog",).on("click", function (e) {
     const getId = $(this).attr("target-id");
@@ -60,29 +87,17 @@ $(".backButton").click(function(){
     window.history.go(-1);
 });
 
-// document.addEventListener("keyup", function (e) {
-//     var keyCode = e.keyCode ? e.keyCode : e.which;
-//             if (keyCode == 44) {
-//                 stopPrntScr();
-//             }
-//         });
-function stopPrntScr() {
+const lalert = $('#alertshow');
+if (lalert.is(":checked")) {
+    $("#alertBox").show() ;
+}
 
-            var inpFld = document.createElement("input");
-            inpFld.setAttribute("value", ".");
-            inpFld.setAttribute("width", "0");
-            inpFld.style.height = "0px";
-            inpFld.style.width = "0px";
-            inpFld.style.border = "0px";
-            document.body.appendChild(inpFld);
-            inpFld.select();
-            document.execCommand("copy");
-            inpFld.remove(inpFld);
-        }
-       function AccessClipboardData() {
-            try {
-                window.clipboardData.setData('text', "Access   Restricted");
-            } catch (err) {
-            }
-        }
-        // setInterval("AccessClipboardData()", 300);
+$('#alertShow').click(function() {
+    // $("#alertBox").toggle(this.checked);
+    if(this.checked) {
+        $("#alertBox").show() ;
+    } else {
+        $("#alertBox").hide() ;
+        $("#alertBox").val(""); 
+    }
+});

@@ -4,7 +4,7 @@
 <div class="main-content">
   <div class="row">
     <div class="col-6"><h3>PDF List</h3></div>
-    <div class="col-6 float-right"><button class="btn btn-secondary backButton float-right">Back</button></div>
+    <div class="col-6 float-right"><a href="{{ url_for('admin.examination_data') }}" class="btn btn-secondary float-right">Back</a></div>
   </div>
   <div class="content-header">
     {% for message in get_flashed_messages() %}
@@ -32,16 +32,6 @@
             <hr>
           </div>
           <div class="col-md-6">
-            <form action="" method="POST">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search Name" name="keyword">
-                <div class="input-group-append">
-                  <button class="btn btn-primary" type="submit">
-                    <i class="fa fa-search"></i>
-                  </button>
-                </div>
-              </div>
-            </form>
           </div>
           <div class="col-md-6">
             <a href="{{ url_for('admin.question_pdf_add', id=get_exam.id  ) }}" class="btn btn-primary float-right">Add New</a>
@@ -54,17 +44,20 @@
     <table class="table table-bordered">
         <thead class="">
             <tr>
-                <td>instruction</td>
-                <td>file</td>
+                <td>No</td>
+                <td>Name</td>
+                <td>File</td>
+                <td>Duration</td>
                 <td>Action</td>
             </tr>
         </thead>
         <tbody>
-            {% set count = namespace(value=1) %}
             {% for question in quetions %}
             <tr>
-                <td>{{ question.instruction }}</td>
+                <td>{{ loop.index + start }}</td>
+                <td>{{ question.name }}</td>
                 <td><a href="{{ url_for('admin.open_pdf', filename=question.filename) }}">Preview PDF</a></td>
+                <td>{{ question.duration }}</td>
                 <td>
                     <a href="{{ url_for('admin.question_pdf_edit', id=question.id) }}" class="btn btn-success btn-sm"><i class="fa fa-pencil"></i></a>
                       <a href="" class="btn btn-danger btn-sm delete-pdf" target-id="{{ question.id }}" target-function= "admin.question_pdf_delete"><i class="fa fa-trash"></i></a>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} user List {% endblock %}
+{% block title %} {{ title }} {% endblock %}
 {% block page_content %}
 <div class="main-content">
   <div class="content-header mt-3 mb-3">
@@ -20,7 +20,11 @@
             </form>
           </div>
           <div class="col-md-6">
-            <a href="{{ url_for('admin.add') }}" class="btn btn-primary float-right">Add New</a>
+            {% if current_user.role_id != 1 %}
+              <!-- <span class="text-danger">NO ACCESS</span> -->
+            {% else %}
+              <a href="{{ url_for('admin.add') }}" class="btn btn-primary float-right">Add New</a>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -40,10 +44,9 @@
             </tr>
         </thead>
         <tbody>
-            {% set count = namespace(value=1) %}
             {% for user in users %}
             <tr>
-                <td>{{ loop.index }}</td>
+                <td>{{ loop.index + start }}</td>
                 <td>   <a href="{{ url_for('admin.view', id=user.id) }}" title="view">{{ user.fullname }}</a> </td>
                 <td>{{ user.division.name }}</td>
                 <td>{{ user.level.name }}</td>

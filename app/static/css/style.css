@@ -78,6 +78,7 @@
   text-align: center;
   line-height: 50px;
 }
+
 .sidebar .logo-details img {
   min-width: 50px;
   height: 40px;
@@ -415,6 +416,46 @@
   font-weight: 800;
   font-family: 28px;
 }
+
+.toolbar-viewer {
+  margin: auto;
+}
+
+.hide-element {
+  visibility: hidden;
+}
+
+.show-element {
+  visibility: visible;
+}
+
+.background-viewer {
+  border: 3px solid #000;
+  padding: 5px;
+  width: 100%;
+}
+
+#canvas_container {
+  width: 100%;
+  height: 650px;
+  overflow: auto;
+}
+
+#canvas_container {
+  background: #333;
+  text-align: center;
+  border: solid 3px;
+}
+
+#navigation_controls {
+  width: 100%;
+  margin: 20px 0;
+}
+#zoom_controls {
+  width: 100%;
+  margin: 20px 0;
+}
+
 
 /* ==============END ADMIN PAGE=============== */
 @media (max-width: 420px) {
