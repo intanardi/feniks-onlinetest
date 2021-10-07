@@ -1,6 +1,6 @@
 from flask_login.utils import _secret_key
 from sqlalchemy.orm import backref
-from app import candidate, create_app, db
+from app import create_app, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import login_manager
@@ -93,7 +93,7 @@ class User(UserMixin,db.Model):
         for u in user:
             schedule = "Not Set"
             schedule_status = 0
-            get_schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=u.id).first()
+            get_schedule = Candidate_Test_Schedule.query.filter_by(candidate_id=u.id).first()
             if get_schedule is not None :
                 schedule = get_schedule.date_test
                 schedule_status = 1
@@ -236,15 +236,15 @@ class Psikotest(db.Model):
             db.session.add(p)
             db.session.commit()
 
-class Candidate_Schedule_Test(db.Model):
-    __tablename__ = "candidate_schedule_test"
+class Candidate_Test_Schedule(db.Model):
+    __tablename__ = "candidate_test_schedule"
     id = db.Column(db.Integer, primary_key = True)
     candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date_test = db.Column(db.DateTime())
     is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return '<Candidate_Schedule_Test %r>' % self.date_test
+        return '<Candidate_Test_Schedule %r>' % self.date_test
 
 class Candidate_Psikotest_Schedule(db.Model):
     __tablename__ = "candidate_psikotest_schedule"
@@ -277,29 +277,23 @@ class Test_Type(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(64))
     is_deleted = db.Column(db.Boolean, default=False)
-    # test_results = db.relationship('Candidate_Test_Result', backref='test_type', lazy='dynamic')
 
-    def __repr__(self):
-        return '<Test_Type %r>' % self.name
-    
-    def insert_static_data(self):
-        values = ['Psikotest', 'Main Test']
+    def insert_static_data():
+        values = ['psikotest', 'main test']
         for v in values:
-            obj = Test_Type()
-            obj.name = v
-            db.session.add(obj)
+            gs = Test_Type()
+            gs.name = v
+            db.session.add(gs)
             db.session.commit()
 
 class Candidate_Test_Result(db.Model):
     __tablename__ = "candidate_test_result"
     id = db.Column(db.Integer, primary_key = True)
     candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    test_type = db.Column(db.Integer, db.ForeignKey('test_type.id'))
-    filename = db.Column(db.String(128))
+    filename_psikotest = db.Column(db.String(128))
+    filename_maintest = db.Column(db.String(128))
+    name = db.Column(db.String(64))
     is_deleted = db.Column(db.Boolean, default=False)
-
-    def __repr__(self):
-        return '<Candidate_Main_Schedule %r>' % self.candidate_id
 
 class Global_Setting(db.Model):
     __tablename__ = "global_setting"

@@ -19,7 +19,7 @@ def login():
             response['message'] = 'invalid username or password'
             return response
         if user.role.name.lower() == 'candidate':
-            schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=user.id).first()
+            schedule = Candidate_Test_Schedule.query.filter_by(candidate_id=user.id).first()
             if schedule is not None :
                 today = datetime.now()
                 _date = today.strftime("%Y-%m-%d %H:%M:%S")

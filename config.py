@@ -14,7 +14,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DATA_PER_PAGE = 10
     UPLOAD_FOLDER = '/app/static/upload'
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    ALLOWED_EXTENSIONS = {'pdf'}
     PATH = os.getcwd()
 
     @staticmethod

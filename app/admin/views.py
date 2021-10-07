@@ -1,10 +1,10 @@
 import datetime
 from datetime import datetime, date, time, timedelta
-from flask import render_template, session, redirect, url_for, flash, request, current_app, Flask, send_from_directory
+from flask import render_template, session, redirect, url_for, flash, request, current_app, Flask, send_from_directory, send_file
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 from . import admin
-from .. import db, csrf, ckeditor
+from .. import db, csrf
 from ..models import *
 from ..utils import convert_in_hours, convert_in_minutes, duration_format_allowed
 import json
@@ -12,6 +12,8 @@ import random
 import os
 from os.path import join, dirname, realpath
 import re
+import io
+from zipfile import ZipFile
 
 apps = Flask(__name__)
 apps.config['UPLOAD_PATH'] = 'app/static/uploads/test'
@@ -21,23 +23,36 @@ apps.config['UPLOAD_PATH'] = 'app/static/uploads/test'
 ROWS_PER_PAGE = 10
 ADMIN_PERMISSION_LIST = [1,2]
 UPLOAD_FOLDER = '/static/upload'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'pdf'}
 title = "Feniks CBT"
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@admin.route('/open_pdf/<filename>')
+@admin.route('/open/pdf/test/<filename>')
 @login_required
 def open_pdf(filename):
-    print("heree")
-    print("----")
-    print(filename)
-    # directory = "/static/pdf/psikotest/soal_cfit.pdf"
     directory = "/static/uploads/test/" + filename
     print(directory)
     return render_template('pdf_dashboard/preview.html', directory=directory)
+
+@admin.route('/open/pdf/result/<filename>')
+@login_required
+def open_result_pdf(filename):
+    # directory = "/static/pdf/psikotest/soal_cfit.pdf"
+    directory = "/static/uploads/result/" + filename
+    print(directory)
+    return render_template('pdf_dashboard/preview.html', directory=directory)
+
+@admin.route('/open/pdf/result/download/<path:filename>', methods=['GET', 'POST'])
+@login_required
+def download_result(filename):
+    print("hyeyeyeyeyeyeyeree")
+    print("----")
+    print(filename)
+    directory = 'static/uploads/result/' + filename
+    return send_file(directory, as_attachment=True)
 
 @admin.route('/')
 @admin.route('/index')
@@ -52,7 +67,6 @@ def index():
     inactive_admin = User.query.filter(User.role_id.in_(ADMIN_PERMISSION_LIST),User.is_deleted.is_(True)).count()
     total_candidate = User.query.filter_by(role_id=3,is_deleted=False).count()
     new_candidate = User.query.filter_by(added_time=current_date).count()
-    print(new_candidate)
     return render_template('admin/index.html', inactive_admin=inactive_admin, active_admin=active_admin, total_candidate=total_candidate, new_candidate=new_candidate)
 """
     =================================================
@@ -369,15 +383,14 @@ def candidate_data():
     total_rows = User.query.filter(User.role_id.in_(["3"]), User.is_deleted.is_(False), User.fullname.like(_search)).count()
     boxsize = ROWS_PER_PAGE
     num_pages = -(total_rows // -boxsize)
-    candidates = db.session.query(User.id, User.fullname.label('name'), User.email, User.phone, Level.name.label('level'), Division.name.label('division'), Candidate_Schedule_Test.date_test.label('schedule')).join(Level, Division, Candidate_Schedule_Test, isouter=True).filter(User.role_id.in_(["3"]), User.is_deleted.is_(False), User.fullname.like(_search)).order_by(User.id).paginate(page=page, per_page=ROWS_PER_PAGE)
+    candidates = db.session.query(User.id, User.fullname.label('name'), User.email, User.phone, Level.name.label('level'), Division.name.label('division'), Candidate_Test_Schedule.date_test.label('schedule')).join(Level, Division, Candidate_Test_Schedule, isouter=True).filter(User.role_id.in_(["3"]), User.is_deleted.is_(False), User.fullname.like(_search)).order_by(User.id).paginate(page=page, per_page=ROWS_PER_PAGE)
     # print(candidates.items)
     # candidates = User.query.filter(User.role_id.in_(["3"]), User.is_deleted.is_(False), User.fullname.like(_search)).paginate(page=page, per_page=ROWS_PER_PAGE)
-    candidate_schedule = Candidate_Schedule_Test.query.all()
     next_url = url_for('admin.candidate_data', page=candidates.next_num) \
         if candidates.has_next else None
     prev_url = url_for('admin.candidate_data', page=candidates.prev_num) \
         if candidates.has_prev else None
-    return render_template('admin/candidate/index.html', candidates=candidates.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), candidate_schedule=candidate_schedule,title=title, start=start)
+    return render_template('admin/candidate/index.html', candidates=candidates.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), title=title, start=start)
     
 @login_required
 @admin.route('/candidate/add', methods=['GET', 'POST'])
@@ -471,11 +484,11 @@ def candidate_set_schedule(id):
         return redirect(url_for('candidate.index'))
     schedule_date = ""
     schedule_time = ""
-    schedule = Candidate_Schedule_Test()
+    schedule = Candidate_Test_Schedule()
     divisions = Division.query.all()
     levels = Level.query.all()
     candidate = User.query.filter_by(id=id).first()
-    is_time_set = Candidate_Schedule_Test.query.filter_by(candidate_id=candidate.id).first()
+    is_time_set = Candidate_Test_Schedule.query.filter_by(candidate_id=candidate.id).first()
     if is_time_set:
         schedule_date = is_time_set.date_test.strftime("%m/%d/%Y")
         schedule_time = is_time_set.date_test.strftime("%H:%M")
@@ -519,7 +532,7 @@ def candidate_delete(id):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
         return redirect(url_for('candidate.home'))
-    cst = Candidate_Schedule_Test.query.filter_by(candidate_id=id).delete()
+    cst = Candidate_Test_Schedule.query.filter_by(candidate_id=id).delete()
     cms = Candidate_Main_Schedule.query.filter_by(candidate_id=id).delete()
     cps = Candidate_Psikotest_Schedule.query.filter_by(candidate_id=id).delete()
     candidate = User.query.filter_by(id=id).delete()
@@ -716,6 +729,8 @@ def psikotest_type_delete(id):
 @csrf.exempt
 @login_required
 def psikotest_data(id):
+    print(id)
+    print("---------------")
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
@@ -742,17 +757,6 @@ def psikotest_data(id):
         if psikotests.has_prev else None
     return render_template('admin/psikotest/index.html', psikotests=psikotests.items, psikotest_type=psikotest_type, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), title=title, start=start)
     # Check If user role is superadmin or admin
-    
-    psikotests = Psikotest.query.filter_by(psikotest_type_id=psikotest_type.id, is_deleted=False).all()
-    if request.method == 'POST':
-        psikotest = Psikotest()
-        psikotest.name = request.form['name']
-        psikotest.preliminary = request.form['preliminary']
-        db.session.add(psikotest)
-        db.session.commit()
-        return redirect(url_for('admin.psikotest_data'))
-        
-    return render_template('admin/psikotest/index.html',title=title, psikotest_type=psikotest_type, psikotests=psikotests)
 
 @admin.route('/psikotest/psikotest_data/add/<id>', methods=['GET', 'POST'])
 @csrf.exempt
@@ -1136,3 +1140,32 @@ def question_pdf_delete(id):
     # Return JSON Object
     return json.dumps(value)
     return redirect(url_for('admin.question_pdf_data', id=examination_detail.examination_id))
+
+# dadasdssadsad
+@admin.route('/test/result/', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def test_result():
+    page = request.args.get('page', 1, type=int)
+    _keyword = ""
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    if request.method == "POST":
+        _keyword= request.form['keyword']
+        page = 1
+    start = 0
+    if page > 0:
+        start = page * ROWS_PER_PAGE - ROWS_PER_PAGE
+    _search = "%{}%".format(_keyword)
+    directory = "/static/uploads/test/"
+    page = request.args.get('page', 1, type=int)
+    total_rows = Candidate_Test_Result.query.filter_by(is_deleted=False).count()
+    boxsize = ROWS_PER_PAGE
+    num_pages = -(total_rows // - boxsize)
+    test_result = db.session.query(User.id, User.fullname.label('name'), User.email, User.phone, Level.name.label('level'), Division.name.label('division'), Candidate_Test_Result.filename_psikotest.label('filename_psikotest'), Candidate_Test_Result.filename_maintest.label('filename_maintest')).join(Level, Division, Candidate_Test_Result, isouter=True).filter(Candidate_Test_Result.is_deleted.is_(False), User.fullname.like(_search)).order_by(User.id).paginate(page=page, per_page=ROWS_PER_PAGE)
+    next_url = url_for('admin.test_result', page=test_result.next_num) \
+        if test_result.has_next else None
+    prev_url = url_for('admin.test_result', page=test_result.prev_num) \
+        if test_result.has_prev else None
+    return render_template('admin/candidate/test_result.html', test_results=test_result.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), directory=directory, start=start)

@@ -1,4 +1,4 @@
-from flask import render_template, session, redirect, url_for, flash, request, current_app
+from flask import render_template, session, redirect, url_for, flash, request, current_app, Flask
 from flask_login import login_required, login_user, logout_user, current_user
 from . import candidate
 from .forms import CandidateForm, LoginForm
@@ -7,32 +7,39 @@ from ..utils import convert_in_hours, convert_in_minutes, format_duration
 from ..models import *
 import json
 from datetime import datetime, date, time, timedelta
-# current_time = now.strftime("%H:%M:%S")
+import os
+from os.path import join, dirname, realpath
+import random
 
 title = "Feniks CBT"
 directory = "/static/uploads/test/"
 
+apps = Flask(__name__)
+apps.config['UPLOAD_PATH'] = 'app/static/uploads/result'
+ALLOWED_EXTENSIONS = {'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def check_login_allowed():
-    if current_user.is_authenticated:
-        schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=current_user.id).first()
-        if schedule is None:
-            return False
-        else :
-            today = datetime.now()
-            today_datetime = today.strftime("%Y-%m-%d %H:%M:%S")
-            today_datetime_fix = datetime.strptime(today_datetime, '%Y-%m-%d %H:%M:%S')
-            date_from_db = schedule.date_test.strftime("%Y-%m-%d %H:%M:%S")
-            date_from_db_fix = datetime.strptime(date_from_db, '%Y-%m-%d %H:%M:%S')
-            gs = Global_Setting.query.filter_by(setting_code=1).first()
-            login_expired = date_from_db_fix + timedelta(hours=int(gs.variable))
-            if today.date() == date_from_db_fix.date():
-                if today_datetime_fix >= login_expired:
-                    return False
-            else:
-                return False
-        return True
+    schedule = Candidate_Test_Schedule.query.filter_by(candidate_id=current_user.id).first()
+    if schedule is None:
+        return False
     else :
-        return redirect(url_for('auth.login'))
+        today = datetime.now()
+        today_datetime = today.strftime("%Y-%m-%d %H:%M:%S")
+        today_datetime_fix = datetime.strptime(today_datetime, '%Y-%m-%d %H:%M:%S')
+        date_from_db = schedule.date_test.strftime("%Y-%m-%d %H:%M:%S")
+        date_from_db_fix = datetime.strptime(date_from_db, '%Y-%m-%d %H:%M:%S')
+        gs = Global_Setting.query.filter_by(setting_code=1).first()
+        login_expired = date_from_db_fix + timedelta(hours=int(gs.variable))
+        if today.date() == date_from_db_fix.date():
+            if today_datetime_fix >= login_expired:
+                return False
+        else:
+            return False
+    return True
 
 @candidate.route('/', methods=['GET', 'POST'])
 @candidate.route('/index', methods=['GET', 'POST'])
@@ -57,7 +64,7 @@ def quiz():
     _date = time.strftime("%Y-%m-%d %H:%M:%S")
     _time = time.strftime("%H:%M:%S")
     date = datetime.strptime(_date, '%Y-%m-%d %H:%M:%S')
-    schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=current_user.id).first()
+    schedule = Candidate_Test_Schedule.query.filter_by(candidate_id=current_user.id).first()
     cand_date = ""
     if schedule is not None:
         _date_db = schedule.date_test.strftime("%Y-%m-%d %H:%M:%S")
@@ -97,7 +104,7 @@ def test():
     _date = time.strftime("%Y-%m-%d %H:%M:%S")
     _time = time.strftime("%H:%M:%S")
     date = datetime.strptime(_date, '%Y-%m-%d %H:%M:%S')
-    schedule = Candidate_Schedule_Test.query.filter_by(candidate_id=current_user.id).first()
+    schedule = Candidate_Test_Schedule.query.filter_by(candidate_id=current_user.id).first()
     cand_date = ""
     check_Candidate_Psikotest_Schedule = Candidate_Psikotest_Schedule.query.filter_by(candidate_id=current_user.id).first()
     today = datetime.now()
@@ -135,7 +142,6 @@ def test():
 @csrf.exempt
 @login_required
 def candidate_psikotest():
-    # check login expired
     status = check_login_allowed()
     if status == False:
         flash("Waktu izin login habis")
@@ -283,7 +289,7 @@ def main_test():
     if check_psikotest is not None:
         return redirect(url_for('candidate.candidate_psikotest'))
     if check_main_test is None:
-        return redirect(url_for('candidate.candidate_test_done'))
+        return redirect(url_for('candidate.upload_result'))
     print(check_main_test.division_test_id)
     print('0000')
     examination_test = Examination_Detail.query.filter_by(id=check_main_test.division_test_id).first()
@@ -362,3 +368,42 @@ def candidate_test_done():
         flash("Waktu izin login habis")
         return redirect(url_for('auth.logout'))
     return render_template('candidate/test_done.html')
+
+@candidate.route('/main/test/upload_result', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def upload_result():
+    status = check_login_allowed()
+    if status == False:
+        flash("Waktu izin login habis")
+        return redirect(url_for('auth.logout'))
+    check = Candidate_Test_Result.query.filter_by(candidate_id=current_user.id).first()
+    print(check)
+    if check is not None:
+        return redirect(url_for('candidate.candidate_test_done'))
+    if request.method == 'POST':
+        psikotest = request.files['psikotest']
+        maintest = request.files['maintest']
+        if psikotest.filename == '' or maintest.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if psikotest and allowed_file(psikotest.filename):
+            if maintest and allowed_file(maintest.filename):
+                random_number = random.randint(1, 900)
+                name = current_user.fullname.replace(" ", "_")
+                filename_psikotest = name +"_"+ str(random_number)+ '_'+ str(current_user.id)+ '_' + str(current_user.level_id)+ '_' + str(current_user.division_id)+ '_psikotest_' +'.pdf'
+                filename_miantest = name +"_"+ str(random_number)+ '_'+ str(current_user.id)+ '_' + str(current_user.level_id)+ '_' + str(current_user.division_id)+ '_maintest_' +'.pdf'
+                ctr = Candidate_Test_Result()
+                ctr.candidate_id = current_user.id
+                ctr.filename_psikotest = filename_psikotest
+                ctr.filename_maintest = filename_miantest
+                db.session.add(ctr)
+                db.session.commit()
+                psikotest.save(os.path.join(apps.config['UPLOAD_PATH'],filename_psikotest))
+                maintest.save(os.path.join(apps.config['UPLOAD_PATH'],filename_miantest))
+                return redirect(url_for('candidate.candidate_test_done'))
+            flash('main test file should be in PDF')
+            return redirect(request.url)
+        flash('Psikotest file should be in PDF')
+        return redirect(request.url)
+    return render_template('candidate/upload_result.html')
