@@ -24,19 +24,19 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI') or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/feniks_online_test'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://feniks:000fenikscbt000@localhost:3306/feniks_online_test'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/feniks_online_test'
     # 'SQLALCHEMY_TRACK_MODIFICATIONS' = Falsedeactivate
     # SQLALCHEMY_DATABASE_URI = 'mysql://root:dsai99asdu8x@9@localhost/orb_metropolis'
 
 class TestingConfig(Config):
     TESTING = True
-    # SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI') or 'sqlite://'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/feniks_online_test'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://feniks:000fenikscbt000@localhost:3306/feniks_online_test'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/feniks_online_test'
 
 class ProductionConfig(Config):
-    # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/feniks_online_test'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://feniks:000fenikscbt000@localhost:3306/feniks_online_test'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/feniks_online_test'
 
 config = {
     'development' : DevelopmentConfig,
