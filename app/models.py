@@ -26,6 +26,7 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role %r>' % self.name
     
+    @staticmethod
     def insert_static_data(self):
         values = ['admin', 'superadmin']
         for v in values:
@@ -61,6 +62,7 @@ class User(UserMixin,db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+    @staticmethod
     def insert_static_data(self):
         values = [
             { "email" : "example3@gmail.com", "username" :"ardi", "password": "123456", "role_id": 1 }
@@ -112,6 +114,7 @@ class Level(db.Model):
     def __repr__(self):
         return '<Question_Level %r>' % self.name
     
+    @staticmethod
     def insert_static_data(self):
         values = ['Staff', 'Senior', 'SPV']
         for v in values:
@@ -131,6 +134,7 @@ class Division(db.Model):
     def __repr__(self):
         return '<Division %r>' % self.name
     
+    @staticmethod
     def insert_static_data(self):
         values = ['Accounting', 'Audit' , 'Legal', 'HR', 'IT',]
         for v in values:
@@ -201,6 +205,7 @@ class Psikotest_Type(db.Model):
     def __repr__(self):
         return '<Psikotest_Type %r>' % self.name
     
+    @staticmethod
     def insert_static_data(self):
         values = ['CFIT', 'WPT']
         for v in values:
@@ -223,6 +228,7 @@ class Psikotest(db.Model):
     def __repr__(self):
         return '<Psikotest %r>' % self.instruction_filename
     
+    @staticmethod
     def insert_static_data(self):
         values = [
             { "filename" : "soal_cfit.pdf", "instruction" : "SIlahkan Baca Instruksi Lembar soal !", "psikotest_type_id": 1 },
@@ -278,6 +284,7 @@ class Test_Type(db.Model):
     name = db.Column(db.String(64))
     is_deleted = db.Column(db.Boolean, default=False)
 
+    @staticmethod
     def insert_static_data():
         values = ['psikotest', 'main test']
         for v in values:
@@ -305,6 +312,7 @@ class Global_Setting(db.Model):
 
     # code 1 total test duration
 
+    @staticmethod
     def insert_static_data():
         values = [
             { "name" : "total test duration", "setting_code" : 1, "variable" : "120"}
