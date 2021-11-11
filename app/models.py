@@ -27,7 +27,7 @@ class Role(db.Model):
         return '<Role %r>' % self.name
     
     @staticmethod
-    def insert_static_data(self):
+    def insert_static_data():
         values = ['admin', 'superadmin']
         for v in values:
             role = Role()
@@ -63,7 +63,7 @@ class User(UserMixin,db.Model):
         return check_password_hash(self.password_hash, password)
     
     @staticmethod
-    def insert_static_data(self):
+    def insert_static_data():
         values = [
             { "email" : "example3@gmail.com", "username" :"ardi", "password": "123456", "role_id": 1 }
             ]
@@ -115,7 +115,7 @@ class Level(db.Model):
         return '<Question_Level %r>' % self.name
     
     @staticmethod
-    def insert_static_data(self):
+    def insert_static_data():
         values = ['Staff', 'Senior', 'SPV']
         for v in values:
             level = Level()
@@ -135,7 +135,7 @@ class Division(db.Model):
         return '<Division %r>' % self.name
     
     @staticmethod
-    def insert_static_data(self):
+    def insert_static_data():
         values = ['Accounting', 'Audit' , 'Legal', 'HR', 'IT',]
         for v in values:
             division = Division()
@@ -206,7 +206,7 @@ class Psikotest_Type(db.Model):
         return '<Psikotest_Type %r>' % self.name
     
     @staticmethod
-    def insert_static_data(self):
+    def insert_static_data():
         values = ['CFIT', 'WPT']
         for v in values:
             pt = Psikotest_Type()
@@ -229,7 +229,7 @@ class Psikotest(db.Model):
         return '<Psikotest %r>' % self.instruction_filename
     
     @staticmethod
-    def insert_static_data(self):
+    def insert_static_data():
         values = [
             { "filename" : "soal_cfit.pdf", "instruction" : "SIlahkan Baca Instruksi Lembar soal !", "psikotest_type_id": 1 },
             { "filename" : "soal_wpt.pdf", "instruction" : "SIlahkan Baca Instruksi Lembar soal !", "psikotest_type_id": 2 }
