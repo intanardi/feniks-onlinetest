@@ -65,13 +65,11 @@ class User(UserMixin,db.Model):
     @staticmethod
     def insert_static_data():
         values = [
-            { "email" : "ardibatio@gmail.com", "username" :"ardipramanova", "password": "123456", "role_id": 2, "division_id": 5, "level_id": 2 }
+            { "email" : "ardibatio@gmail.com", "username" :"ardipramanova", "password": "123456", "role_id": 2 }
             ]
         for v in values:
             user = User()
             user.username = v['username']
-            user.division_id = v['division_id']
-            user.level_id = v['level_id']
             user.password_hash = generate_password_hash(v['password'])
             user.email = v['email']
             user.role_id = v['role_id']
