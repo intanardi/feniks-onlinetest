@@ -28,10 +28,21 @@ class Role(db.Model):
     
     @staticmethod
     def insert_static_data():
-        values = ['admin', 'superadmin']
+        values = [
+            { 
+            "id" : "1",
+            "name" : "superadmin" },
+            { 
+            "id" : "2",
+            "name" : "admin" },
+            { 
+            "id" : "3",
+            "name" : "candidate" }
+            ]
         for v in values:
             role = Role()
-            role.name = v
+            role.id = v['id']
+            user.name = v['name']
             db.session.add(role)
             db.session.commit()
 
