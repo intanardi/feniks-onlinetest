@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 body {
-  background: #fff;
+  background-color: #0097e6 !important;
   font-family: "Poppins", sans-serif;
 }
 .feniksbackground {
@@ -31,7 +32,7 @@ input[type="text"],  input[type="password"]{
   font-size: 12px;
 }
 .login-header{
-  background-color: #E80012;
+  background-color: #192a56;
   padding: 10px;
   text-transform: capitalize;
   border-radius: 5px 5px 0 0;
@@ -45,7 +46,7 @@ input[type="text"],  input[type="password"]{
   padding: 0 15px;
 }
 .login-footer{
-  background-color: #E80012;
+  background-color: #192a56;
   padding: 10px;
   position: absolute;
   bottom: 0;
@@ -79,7 +80,7 @@ input[type="text"],  input[type="password"]{
   -moz-transition: all 0.2s ease;
   -ms-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 1px;
   font-weight: 500;
   width: 100%;
