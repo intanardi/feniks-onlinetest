@@ -42,7 +42,7 @@ class Role(db.Model):
         for v in values:
             role = Role()
             role.id = v['id']
-            user.name = v['name']
+            role.name = v['name']
             db.session.add(role)
             db.session.commit()
 
