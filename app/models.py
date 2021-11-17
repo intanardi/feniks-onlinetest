@@ -76,7 +76,7 @@ class User(UserMixin,db.Model):
     @staticmethod
     def insert_static_data():
         values = [
-            { "email" : "ardibatio@gmail.com", "username" :"ardipramanova", "password": "123456", "role_id": 2 }
+            { "email" : "ardibatio@gmail.com", "username" :"ardipramanova", "password": "123456", "role_id": 1 }
             ]
         for v in values:
             user = User()

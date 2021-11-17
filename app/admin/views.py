@@ -424,6 +424,7 @@ def candidate_add():
         candidate.address = request.form['address'] 
         candidate.division_id = request.form['division'] 
         candidate.level_id = request.form['level']
+        candidate.role_id = 3
         candidate.set_password(request.form['password'])
         db.session.add(candidate)
         db.session.commit()
