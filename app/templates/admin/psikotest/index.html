@@ -38,8 +38,8 @@
             {% for psikotest in psikotests %}
             <tr>
                 <td>{{ loop.index + start }}</td>
-                <td><a href="{{ url_for('admin.download_result', filename=psikotest.instruction_filename) }}">instruction</a></td>
-                <td><a href="{{ url_for('admin.download_result', filename=psikotest.test_filename) }}">test</a></td>
+                <td><a href="{{ url_for('admin.open_pdf', filename=psikotest.instruction_filename) }}">instruction</a></td>
+                <td><a href="{{ url_for('admin.open_pdf', filename=psikotest.test_filename) }}">test</a></td>
                 <td>{{ psikotest.duration }}</td>
                 <td>{{ psikotest.alert }}</td>
                 <td>

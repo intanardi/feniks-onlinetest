@@ -20,7 +20,9 @@
           </form>
         </div>
         <div class="col-md-6">
+          {% if current_user.role_id == 1 %}
           <a href="{{ url_for('admin.add_global_setting') }}" class="btn btn-primary float-right">Add New</a>
+          {% endif %}
         </div>
       </div>
     </div>

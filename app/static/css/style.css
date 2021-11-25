@@ -20,7 +20,7 @@
     --yellowP : #F4D209;
     --blackP: #1e272e;
     --greenP: #2ecc71;
-
+    --carrotP : #e67e22;
   }
 
 /* ===================== SIGNATURE COLORS ======================== */
@@ -41,6 +41,9 @@
 }
 .feniksGreen{
   background-color: #2ecc71;
+}
+.feniksCarrot{
+  background-color: #e67e22;
 }
 
 /* Google Fonts Import Link */

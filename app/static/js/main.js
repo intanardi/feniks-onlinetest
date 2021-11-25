@@ -21,7 +21,7 @@ $( document ).ready(function() {
       });
     
     $(".confirmation-candidate").on("click", function (e) {
-        const res = window.confirm("Anda yakin sudah mengerti ?");
+        const res = window.confirm("Update confirmation ?");
         e.preventDefault();
         if(!res){
             console.log(1);
@@ -40,7 +40,7 @@ $( document ).ready(function() {
             });
         }
                 
-        });
+    });
     
     $(".delete-dialog",).on("click", function (e) {
     const getId = $(this).attr("target-id");
@@ -68,6 +68,75 @@ $( document ).ready(function() {
     });
       // END OF SCRIPT
 });
+
+$(".edit-evaluation").on("click", function(e){
+    const getId = $(this).attr("target-id");
+    // const getlink = $(this).attr("target-link");
+    const getAction = $(this).attr("action-type");
+    const column_element = $(this).parent();
+    console.log(getId)
+    var tdelement = $(this).parent();
+    console.log(tdelement)
+    if (getAction == 3) {
+        tdelement.append('<span><a class="btn btn-sm btn-danger text-white setGranted" href="#" title="Nyatakan Gagal" getAction="'+getAction+'" getId="'+getId+'">Gagal</a> <button class="btn btn-sm btn-outline-danger closeEvaluation" title="Close"><i class="fa fa-times"></i></button></span>');
+    } else if(getAction == 2) {
+        tdelement.append('<span><a class="btn btn-sm btn-success text-white setGranted" href="#" title="Nyatakan Lolos" getAction="'+getAction+'" getId="'+getId+'">Lolos</a> <button class="btn btn-sm btn-outline-danger closeEvaluation" title="Close"><i class="fa fa-times"></i></button></span>');
+    }
+    $(this).css("display", "none");
+});
+
+// function closeEvaluation(e){
+//     const editElement = e.parentElement.parentElement ;
+//     e.parentElement.remove();
+// }
+$('.tbelement').on('click', '.setGranted', function(e) {
+    e.preventDefault();
+    const getAction = $(this).attr("getAction");
+    const getId = $(this).attr("getId");
+    let res = null;
+    if (getAction == 2) {
+     res = window.confirm("Anda yakin kandidat ini lolos ?");
+    } else {
+     res = window.confirm("Anda yakin kandidat ini gagal ?");
+    }
+    if(!res){
+        console.log(1);
+    }else {
+    $.ajax({
+        type: "POST",
+        url: "set_granted/"+ getId,
+        data: {
+            'id': getId,
+            'value': getAction
+        },
+        success: function () {
+            location.reload();
+        }
+    });
+    return false;
+     }
+ });
+
+
+ $('.tbelement').on('click', '.closeEvaluation', function(e) {
+    const parent1 = $(this).parent();
+    const parent2 = parent1.parent();
+    const editEl = parent2.find('.edit-evaluation');
+    editEl.css("display", "inline-flex");
+    parent1.remove()
+ });
+// $( ".edit-evaluation" ).toggle(
+//     function() {
+//         const getId = $(this).attr("target-id");
+//         const getlink = $(this).attr("target-link");
+//         const column_element = $(this).parent();
+//         console.log(getId)
+//         var tdelement = $(this).parent();
+//         $(this).remove();
+//     }, function() {
+//       $( this ).removeClass( "selected" );
+//     }
+//   );
 
 $(".duration-check",).on("keydown", function (e) {
     console.log("duration")

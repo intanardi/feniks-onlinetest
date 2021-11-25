@@ -76,7 +76,7 @@ class User(UserMixin,db.Model):
     @staticmethod
     def insert_static_data():
         values = [
-            { "email" : "ardibatio@gmail.com", "username" :"ardipramanova", "password": "123456", "role_id": 1 }
+            { "name" : "ardi pramanova", "division_id": 5, "level_id": 2,"email" : "ardibatio@gmail.com", "username" :"ardipramanova", "password": "123456", "role_id": 1 }
             ]
         for v in values:
             user = User()
@@ -311,6 +311,8 @@ class Candidate_Test_Result(db.Model):
     filename_psikotest = db.Column(db.String(128))
     filename_maintest = db.Column(db.String(128))
     name = db.Column(db.String(64))
+    is_processed = db.Column(db.Boolean, default=False)
+    be_granted = db.Column(db.Integer, default=1)
     is_deleted = db.Column(db.Boolean, default=False)
 
 class Global_Setting(db.Model):
@@ -349,9 +351,9 @@ def reinit():
 
 def initialize_data():
     Role().insert_static_data()
-    User().insert_static_data()
     Level().insert_static_data()
     Division().insert_static_data()
+    User().insert_static_data()
     Global_Setting.insert_static_data()
     Psikotest_Type().insert_static_data()
     Test_Type().insert_static_data()

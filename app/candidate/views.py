@@ -393,14 +393,17 @@ def upload_result():
                 name = current_user.fullname.replace(" ", "_")
                 filename_psikotest = name +"_"+ str(random_number)+ '_'+ str(current_user.id)+ '_' + str(current_user.level_id)+ '_' + str(current_user.division_id)+ '_psikotest_' +'.pdf'
                 filename_miantest = name +"_"+ str(random_number)+ '_'+ str(current_user.id)+ '_' + str(current_user.level_id)+ '_' + str(current_user.division_id)+ '_maintest_' +'.pdf'
+                newfolder = apps.config['UPLOAD_PATH']+"/"+name+"."+str(current_user.id)
+                print(newfolder)
+                os.mkdir(newfolder)
+                psikotest.save(os.path.join(newfolder,filename_psikotest))
+                maintest.save(os.path.join(newfolder,filename_miantest))
                 ctr = Candidate_Test_Result()
                 ctr.candidate_id = current_user.id
                 ctr.filename_psikotest = filename_psikotest
                 ctr.filename_maintest = filename_miantest
                 db.session.add(ctr)
                 db.session.commit()
-                psikotest.save(os.path.join(apps.config['UPLOAD_PATH'],filename_psikotest))
-                maintest.save(os.path.join(apps.config['UPLOAD_PATH'],filename_miantest))
                 return redirect(url_for('candidate.candidate_test_done'))
             flash('main test file should be in PDF')
             return redirect(request.url)

@@ -12,11 +12,14 @@ import random
 import os
 from os.path import join, dirname, realpath
 import re
-import io
+from glob import glob
+from io import BytesIO
 from zipfile import ZipFile
+import io
 
 apps = Flask(__name__)
 apps.config['UPLOAD_PATH'] = 'app/static/uploads/test'
+# apps.config['RESULT_PATH'] = 'app/static/uploads/result/'
 
 # UPLOADS_TEST_PATH = join(dirname(realpath(__file__)), 'static/upload/')
 
@@ -45,14 +48,35 @@ def open_result_pdf(filename):
     print(directory)
     return render_template('pdf_dashboard/preview.html', directory=directory)
 
-@admin.route('/open/pdf/result/download/<path:filename>', methods=['GET', 'POST'])
+@admin.route('/open/file/download/<filename>', methods=['GET', 'POST'])
 @login_required
-def download_result(filename):
-    print("hyeyeyeyeyeyeyeree")
-    print("----")
+def download_file(filename):
     print(filename)
-    directory = 'static/uploads/result/' + filename
+    directory = 'static/uploads/test/' + filename
     return send_file(directory, as_attachment=True)
+
+@admin.route('/open/pdf/result/download/<path:id>', methods=['GET', 'POST'])
+@login_required
+def download_result(id):
+    # print(filename)
+    # directory = 'static/uploads/result/' + filename
+    # return send_file(directory, as_attachment=True)
+    candidate = User.query.filter_by(id=id).first()
+    name = candidate.fullname.replace(" ", "_")
+    candidate_folder = name+"."+str(candidate.id)
+    directory = 'app/static/uploads/result/' + candidate_folder
+    print(directory)
+    stream = BytesIO()
+    with ZipFile(stream, 'w') as zf:
+        for file in glob(os.path.join(directory, '*')):
+            zf.write(file, os.path.basename(file))
+    stream.seek(0)
+
+    return send_file(
+        stream,
+        as_attachment=True,
+        attachment_filename=name+'_'+str(candidate.id)+'_result.zip'
+    )
 
 @admin.route('/')
 @admin.route('/index')
@@ -63,11 +87,18 @@ def index():
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
     current_date = date.today()
-    active_admin = User.query.filter(User.role_id.in_(ADMIN_PERMISSION_LIST),User.is_deleted.is_(False)).count()
-    inactive_admin = User.query.filter(User.role_id.in_(ADMIN_PERMISSION_LIST),User.is_deleted.is_(True)).count()
-    total_candidate = User.query.filter_by(role_id=3,is_deleted=False).count()
+    total_candidate = User.query.filter_by(role_id=3).count()
+    take_test = User.query.join(Candidate_Psikotest_Schedule, User.id==Candidate_Psikotest_Schedule.candidate_id).group_by(Candidate_Psikotest_Schedule.candidate_id).count()
     new_candidate = User.query.filter_by(added_time=current_date).count()
-    return render_template('admin/index.html', inactive_admin=inactive_admin, active_admin=active_admin, total_candidate=total_candidate, new_candidate=new_candidate)
+    onprocess_candidate = Candidate_Test_Result.query.filter_by(is_processed=True).count()
+    candidate_pass = Candidate_Test_Result.query.filter_by(be_granted=2, is_processed=True).count()
+    candidate_failed = Candidate_Test_Result.query.filter_by(be_granted=3, is_processed=True).count()
+    candidate_got_schedule = Candidate_Test_Schedule.query.count()
+
+    candidate_not_tested_yet = int(total_candidate) - int(candidate_got_schedule)
+    candidate_not_tested = int(total_candidate) - int(onprocess_candidate)
+
+    return render_template('admin/index.html', total_candidate=total_candidate, new_candidate=new_candidate, onprocess_candidate=onprocess_candidate, candidate_pass=candidate_pass, candidate_failed=candidate_failed, take_test=take_test, candidate_not_tested=candidate_not_tested, candidate_not_tested_yet=candidate_not_tested_yet)
 """
     =================================================
                     USER ADMIN MODULE
@@ -442,18 +473,21 @@ def candidate_edit(id):
     divisions = Division.query.all()
     levels = Level.query.all()
     candidate = User.query.filter_by(id=id).first()
+    print(candidate.role_id)
     if request.method == 'POST':
+        print(request.form)
+        print("------")
         check_user = User.query.filter(User.id != id, User.is_deleted.is_(False)).all()
         for c in check_user:
             if request.form['email'].lower() == c.email:
                 flash("Email sudah ada!")
-                return redirect(url_for('admin.edit', id=id))
+                return redirect(url_for('admin.candidate_edit', id=id))
             if request.form['username'].lower() == c.username:
                 flash("Username sudah ada!")
-                return redirect(url_for('admin.edit', id=id))
+                return redirect(url_for('admin.candidate_edit', id=id))
             if request.form['phone'].lower() == c.phone:
-                flash("Phone sudah ada!")
-                return redirect(url_for('admin.edit', id=id))
+                flash("Nomor handphone sudah ada!")
+                return redirect(url_for('admin.candidate_edit', id=id))
         candidate.username = request.form['username']
         candidate.email = request.form['email']  
         candidate.fullname = request.form['fullname']
@@ -527,8 +561,8 @@ def candidate_set_password(id):
     return render_template('admin/candidate/set_password.html', user=user, title=title)
 
 @admin.route('/candidate/delete/<id>', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
+@csrf.exempt
 def candidate_delete(id):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
@@ -536,6 +570,7 @@ def candidate_delete(id):
     cst = Candidate_Test_Schedule.query.filter_by(candidate_id=id).delete()
     cms = Candidate_Main_Schedule.query.filter_by(candidate_id=id).delete()
     cps = Candidate_Psikotest_Schedule.query.filter_by(candidate_id=id).delete()
+    cps = Candidate_Test_Result.query.filter_by(candidate_id=id).delete()
     candidate = User.query.filter_by(id=id).delete()
     db.session.commit()
     return redirect(url_for('admin.candidate_data'))
@@ -713,7 +748,9 @@ def psikotest_type_delete(id):
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
     psikotest_type = Psikotest_Type.query.filter_by(id=id).first()
-    psikotest = Psikotest.query.filter_by(psikotest_type_id=id).all()
+    print(psikotest_type)
+    psikotest = Psikotest.query.filter_by(psikotest_type_id=id, is_deleted=False).all()
+    print(psikotest)
     if psikotest is not None:
         for i in psikotest:
             os.remove(os.path.join(apps.config['UPLOAD_PATH'], i.test_filename))
@@ -1065,7 +1102,7 @@ def question_pdf_add(id):
         random_number = random.randint(1, 100000)
         timenow = str(datetime.now())
         mytime = timenow.split('.')
-        filename = str(mytime[1])+ '_'+ str(user.id)+ '_' + str(user.level_id)+ '_' + str(user.division_id)+ '_' + str(random_number) +'.pdf'
+        filename = str(mytime[1])+ '_'+ str(user.id)+ '_' + str(user.level_id)+ '_' + str(user.division_id)+ '_' + str(random_number) +'_'+ division.name +'_'+ level.name +'.pdf'
         file.save(os.path.join(apps.config['UPLOAD_PATH'],filename))
         examination_detail = Examination_Detail()
         examination_detail.filename = filename
@@ -1159,14 +1196,58 @@ def test_result():
     if page > 0:
         start = page * ROWS_PER_PAGE - ROWS_PER_PAGE
     _search = "%{}%".format(_keyword)
+    name = current_user.fullname.replace(" ", "_")
     directory = "/static/uploads/test/"
     page = request.args.get('page', 1, type=int)
     total_rows = Candidate_Test_Result.query.filter_by(is_deleted=False).count()
     boxsize = ROWS_PER_PAGE
     num_pages = -(total_rows // - boxsize)
-    test_result = db.session.query(User.id, User.fullname.label('name'), User.email, User.phone, Level.name.label('level'), Division.name.label('division'), Candidate_Test_Result.filename_psikotest.label('filename_psikotest'), Candidate_Test_Result.filename_maintest.label('filename_maintest')).join(Level, Division, Candidate_Test_Result, isouter=True).filter(Candidate_Test_Result.is_deleted.is_(False), User.fullname.like(_search)).order_by(User.id).paginate(page=page, per_page=ROWS_PER_PAGE)
+    test_result = db.session.query(User.id, User.fullname.label('name'), User.email, User.phone, Level.name.label('level'), Division.name.label('division'),Candidate_Test_Result.id.label('test_id'), Candidate_Test_Result.filename_psikotest.label('filename_psikotest'), Candidate_Test_Result.filename_maintest.label('filename_maintest'),Candidate_Test_Result.is_processed.label('is_processed'),Candidate_Test_Result.be_granted.label('be_granted')).join(Level, Division, Candidate_Test_Result, isouter=True).filter(Candidate_Test_Result.is_deleted.is_(False), User.fullname.like(_search)).order_by(User.id).paginate(page=page, per_page=ROWS_PER_PAGE)
     next_url = url_for('admin.test_result', page=test_result.next_num) \
         if test_result.has_next else None
     prev_url = url_for('admin.test_result', page=test_result.prev_num) \
         if test_result.has_prev else None
     return render_template('admin/candidate/test_result.html', test_results=test_result.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), directory=directory, start=start)
+
+
+@admin.route('/test/set_flag/<id>', methods=['GET', 'POST'])
+@login_required
+@csrf.exempt
+def set_flag_processed(id):
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    ctr = Candidate_Test_Result.query.filter_by(id=id).first()
+    print(ctr)
+    ctr.is_processed = True
+    db.session.add(ctr)
+    db.session.commit()
+    return redirect(url_for('admin.test_result'))
+
+@admin.route('/lord/<id>', methods=['GET', 'POST'])
+@login_required
+@csrf.exempt
+def lord(id):
+    print("nyahahahahahaha")
+    print(request.form)
+    return "zeal"
+
+@admin.route('/test/result/set_granted/<id>', methods=['GET', 'POST'])
+@login_required
+@csrf.exempt
+def set_granted(id):
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    ctr = Candidate_Test_Result.query.filter_by(id=id).first()
+    print(request.form)
+    ctr.be_granted = request.form['value']
+    db.session.add(ctr)
+    db.session.commit()
+    return redirect(url_for('admin.test_result'))
+    # ctr = Candidate_Test_Result.query.filter_by(id=id).first()
+    # print(ctr)
+    # ctr.is_processed = True
+    # db.session.add(ctr)
+    # db.session.commit()
+    # return redirect(url_for('admin.test_result'))

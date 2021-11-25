@@ -21,15 +21,16 @@
           </div>
         </div>
       </div>
-    <table class="table table-bordered">
+    <table class="table table-bordered tbelement">
         <thead class="">
               <tr>
                   <td>No</td>
                   <td>Name</td>
                   <td>Division</td>
                   <td>Level</td>
-                  <td>Psikotest</td>
-                  <td>Main Test</td>
+                  <td>Download Result</td>
+                  <td>Status</td>
+                  <td width="25%">Tandai Diperiksa</td>
               </tr>
         </thead>
         <tbody>
@@ -39,8 +40,36 @@
                   <td>{{ user.name }}</td>
                   <td>{{ user.division }}</td>
                   <td>{{ user.level }}</td>
-                  <td><a href="{{url_for('admin.download_result', filename=user.filename_psikotest )}}" class="btn btn-sm btn-success">Download</a></td>
-                  <td><a href="{{url_for('admin.download_result', filename=user.filename_maintest )}}" class="btn btn-sm btn-success">Download</a></td>
+                  <td><a href="{{url_for('admin.download_result', id=user.id )}}" class="btn btn-sm btn-info">Download</a></td>
+                  <td>
+                    {% if user.is_processed == true %}
+                      {% if user.be_granted == 1 %}
+                        <a class="btn btn-sm btn-warning text-white" href="#" title="Sedang diproses">On Process</a>
+                      {% elif user.be_granted == 2 %}
+                        <a class="btn btn-sm btn-success text-white" href="#" title="Telah diproses">Lolos</a>
+                      {% elif user.be_granted == 3 %}
+                        <a class="btn btn-sm btn-danger text-white" href="#" title="Telah diproses">Gagal</a>
+                      {% endif %}
+                    {% else %}
+                      <a class="btn btn-sm btn-warning text-white" href="#">Not Processed</a>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if user.is_processed == false %}
+                      <a class="btn btn-sm btn-warning text-white" href="{{url_for('admin.set_flag_processed', id=user.test_id )}}" title="Klik Untuk Menandai On Process"> <i class="fa fa-check"></i></a>
+                    {% else %}
+                      {% if user.be_granted == 1 %}
+                      <a class="btn btn-sm btn-success text-white setGranted" href="#" title="Nyatakan Lolos" getAction=2 getId="{{ user.test_id }}">Lolos</a>
+                      <a class="btn btn-sm btn-danger text-white setGranted" href="#" title="Nyatakan Gagal" getAction=3 getId="{{ user.test_id }}">Gagal</a>
+                      {% elif user.be_granted == 2 %}
+                        <a class="btn btn-sm btn-secondary text-white disabled" href="#" title="Penilaian Selesai">Finish</a>
+                        <a class="btn btn-sm btn-primary text-white edit-evaluation" title="Ubah Penilaian" target-id="{{ user.test_id }}" action-type=3>Edit</a>
+                      {% else %}
+                        <a class="btn btn-sm btn-secondary text-white disabled" href="#" title="Penilaian Selesai">Finish</a>
+                        <a class="btn btn-sm btn-primary text-white edit-evaluation" title="Ubah Penilaian" target-id="{{ user.test_id }}" action-type=2>Edit</a>
+                      {% endif %}
+                    {% endif %}
+                  </td>
               </tr>
             {% endfor %}
         </tbody>
@@ -71,4 +100,13 @@
         </nav>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $(".closeEvaluation").on("click", function(e){
+          console.log(123)
+        });
+    </script>
 {% endblock %}
