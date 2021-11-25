@@ -145,7 +145,7 @@ def add():
     divisions = Division.query.all()
     levels = Level.query.all()
     if request.method == 'POST':
-        check_existing = User.query.all()
+        check_existing = User.query.filter_by(is_deleted=False).all()
         for c in check_existing:
             if request.form['username'].lower() == c.username:
                 flash("username is already exist. please use another one")
@@ -154,11 +154,11 @@ def add():
                 flash("email is already registered!")
                 return redirect(url_for('admin.add'))
             if request.form['phone'].lower() == c.phone:
-                flash("phone is already registered!")
+                flash("Nomor telepon sudah ada!")
                 return redirect(url_for('admin.add'))
 
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", request.form['email'] ):
-            flash("Please fill the email format correctly")
+            flash("Format email salah!")
             return redirect(url_for('admin.add'))
         user = User()
         user.role_id = int(request.form['roles'])
