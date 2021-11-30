@@ -17,15 +17,15 @@ from io import BytesIO
 from zipfile import ZipFile
 import io
 
+UPLOAD_FOLDER = 'app/static/uploads/test'
 apps = Flask(__name__)
-apps.config['UPLOAD_PATH'] = 'app/static/uploads/test'
+apps.config['UPLOAD_PATH'] = UPLOAD_FOLDER
 # apps.config['RESULT_PATH'] = 'app/static/uploads/result/'
 
 # UPLOADS_TEST_PATH = join(dirname(realpath(__file__)), 'static/upload/')
 
 ROWS_PER_PAGE = 10
 ADMIN_PERMISSION_LIST = [1,2]
-UPLOAD_FOLDER = '/static/upload'
 ALLOWED_EXTENSIONS = {'pdf'}
 title = "Feniks CBT"
 
