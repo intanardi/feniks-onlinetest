@@ -1248,3 +1248,88 @@ def set_granted(id):
     # db.session.add(ctr)
     # db.session.commit()
     # return redirect(url_for('admin.test_result'))
+
+# DIVISION MODULE
+
+@admin.route('/division/add', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def division_add():
+    # Check If user role is superadmin or admin
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    if request.method == 'POST':
+        check_exist = Division.query.filter_by(name=request.form['name']).first()
+        if check_exist is not None :
+            flash("You have no permision!")
+            return redirect(url_for('admin.division_data'))
+        division = Division()
+        division.name = request.form['name']
+        db.session.add(division)
+        db.session.commit()
+        return redirect(url_for('admin.division_data'))
+        
+    return render_template('admin/division/add.html',title=title)
+
+@admin.route('/division/edit/<id>', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def division_edit(id):
+    # Check If user role is superadmin or admin
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    division = Division.query.filter_by(id=id).first()
+    if request.method == 'POST':
+        division.name = request.form['name']
+        db.session.add(division)
+        db.session.commit()
+        return redirect(url_for('admin.division_data'))
+        
+    # return render_template('admin/global_setting/edit.html', divisions=division, title=title)
+    # if request.method == 'POST':
+    #     check_exist = Division.query.filter_by(name=request.form['name']).first()
+    #     if check_exist is not None :
+    #         flash("You have no permision!")
+    #         return redirect(url_for('admin.division_edit'))
+    #     division = Division()
+    #     division.name = request.form['name']
+    #     db.session.add(division)
+    #     db.session.commit()
+    #     return redirect(url_for('admin.division_edit'))
+        
+    return render_template('admin/division/edit.html',title=title, division=division)
+
+@admin.route('/division/data', methods=['GET', 'POST'])
+@csrf.exempt
+@login_required
+def division_data():
+    # Check If user role is superadmin or admin
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    page = request.args.get('page', 1, type=int)
+    _keyword = ""
+    if current_user.role_id not in ADMIN_PERMISSION_LIST:
+        flash("You have no permision!")
+        return redirect(url_for('candidate.index'))
+    if request.method == "POST":
+        _keyword= request.form['keyword']
+        page = 1
+    start = 0
+    if page > 0:
+        start = page * ROWS_PER_PAGE - ROWS_PER_PAGE
+    _search = "%{}%".format(_keyword)
+    page = request.args.get('page', 1, type=int)
+    total_rows = Division.query.filter_by(is_deleted=False).count()
+    boxsize = ROWS_PER_PAGE
+    num_pages = -(total_rows // - boxsize)
+    divisions = db.session.query(Division.id, Division.name.label('name')).filter(Division.is_deleted.is_(False), Division.name.like(_search)).order_by(Division.id).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    next_url = url_for('admin.division_data', page=divisions.next_num) \
+        if divisions.has_next else None
+    prev_url = url_for('admin.division_data', page=divisions.prev_num) \
+        if divisions.has_prev else None
+        
+    return render_template('admin/division/index.html',title=title, divisions=divisions.items, prev_url=prev_url, next_url=next_url, num_pages=int(num_pages), start = start)
