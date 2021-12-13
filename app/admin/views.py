@@ -546,9 +546,6 @@ def candidate_set_password(id):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
-    if current_user.role_id != 1:
-        flash("You have no permision!")
-        return redirect(url_for('admin.index'))
     user = User.query.filter_by(id=id).first()
     if request.method == "POST":
         if request.form['password'] != request.form['repassword'] :
