@@ -165,7 +165,7 @@ def candidate_psikotest():
             print(psikotest.timedelta_duration)
             given_time = check_psikotest.started_time
             print(given_time)
-            datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration) + timedelta(seconds=47)
+            datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration) + timedelta(seconds=46)
             print(datetime_duration)
             print("----")
             pdf = psikotest.test_filename
