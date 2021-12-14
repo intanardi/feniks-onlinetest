@@ -50,6 +50,7 @@ $( document ).ready(function() {
     if(!res){
         console.log(1);
     }else {
+        column_element.parent().hide(250)
         $.ajax({
             type: "POST",
             url: "delete/"+ $(this).attr("target-id"),
@@ -107,7 +108,7 @@ $('.tbelement').on('click', '.setGranted', function(e) {
     }else {
     $.ajax({
         type: "POST",
-        url: "/test/result/set_granted/"+ getId,
+        url: "/test/result/set_granted/"+ getId +"/"+getAction,
         data: {
             'id': getId,
             'value': getAction
