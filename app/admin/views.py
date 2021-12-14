@@ -1229,16 +1229,17 @@ def lord(id):
     print(request.form)
     return "zeal"
 
-@admin.route('/test/result/set_granted/<id>', methods=['GET', 'POST'])
+@admin.route('/test/result/set_granted/<id>/<valueaction>', methods=['GET', 'POST'])
 @login_required
 @csrf.exempt
-def set_granted(id):
+def set_granted(id, valueaction):
     if current_user.role_id not in ADMIN_PERMISSION_LIST:
         flash("You have no permision!")
         return redirect(url_for('candidate.index'))
     ctr = Candidate_Test_Result.query.filter_by(id=id).first()
     print(request.form)
-    ctr.be_granted = request.form['value']
+    print(valueaction)
+    ctr.be_granted = valueaction
     db.session.add(ctr)
     db.session.commit()
     return redirect(url_for('admin.test_result'))

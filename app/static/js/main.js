@@ -73,14 +73,17 @@ $(".edit-evaluation").on("click", function(e){
     const getId = $(this).attr("target-id");
     // const getlink = $(this).attr("target-link");
     const getAction = $(this).attr("action-type");
+    const urlhref = $(this).attr("myurl");
+    console.log($(this).attr("href"));
+    console.log(123)
     const column_element = $(this).parent();
     console.log(getId)
     var tdelement = $(this).parent();
     console.log(tdelement)
     if (getAction == 3) {
-        tdelement.append('<span><a class="btn btn-sm btn-danger text-white setGranted" href="#" title="Nyatakan Gagal" getAction="'+getAction+'" getId="'+getId+'">Gagal</a> <button class="btn btn-sm btn-outline-danger closeEvaluation" title="Close"><i class="fa fa-times"></i></button></span>');
+        tdelement.append('<span><a class="btn btn-sm btn-danger text-white" href="'+urlhref+'" title="Nyatakan Gagal" getAction="'+getAction+'" getId="'+getId+'">Gagal</a> <button class="btn btn-sm btn-outline-danger closeEvaluation" title="Close"><i class="fa fa-times"></i></button></span>');
     } else if(getAction == 2) {
-        tdelement.append('<span><a class="btn btn-sm btn-success text-white setGranted" href="#" title="Nyatakan Lolos" getAction="'+getAction+'" getId="'+getId+'">Lolos</a> <button class="btn btn-sm btn-outline-danger closeEvaluation" title="Close"><i class="fa fa-times"></i></button></span>');
+        tdelement.append('<span><a class="btn btn-sm btn-success text-white" href="'+urlhref+'" title="Nyatakan Lolos" getAction="'+getAction+'" getId="'+getId+'">Lolos</a> <button class="btn btn-sm btn-outline-danger closeEvaluation" title="Close"><i class="fa fa-times"></i></button></span>');
     }
     $(this).css("display", "none");
 });

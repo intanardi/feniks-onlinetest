@@ -59,14 +59,14 @@
                       <a class="btn btn-sm btn-warning text-white" href="{{url_for('admin.set_flag_processed', id=user.test_id )}}" title="Klik Untuk Menandai On Process"> <i class="fa fa-check"></i></a>
                     {% else %}
                       {% if user.be_granted == 1 %}
-                      <a class="btn btn-sm btn-success text-white setGranted" href="#" title="Nyatakan Lolos" getAction=2 getId="{{ user.test_id }}">Lolos</a>
-                      <a class="btn btn-sm btn-danger text-white setGranted" href="#" title="Nyatakan Gagal" getAction=3 getId="{{ user.test_id }}">Gagal</a>
+                      <a class="btn btn-sm btn-success text-white" href="{{url_for('admin.set_granted', id=user.test_id )}}" title="Nyatakan Lolos" getAction=2 getId="{{ user.test_id }}">Lolos</a>
+                      <a class="btn btn-sm btn-danger text-white" href="{{url_for('admin.set_granted', id=user.test_id )}}" title="Nyatakan Gagal" getAction=3 getId="{{ user.test_id }}">Gagal</a>
                       {% elif user.be_granted == 2 %}
                         <a class="btn btn-sm btn-secondary text-white disabled" href="#" title="Penilaian Selesai">Finish</a>
-                        <a class="btn btn-sm btn-primary text-white edit-evaluation" title="Ubah Penilaian" target-id="{{ user.test_id }}" action-type=3>Edit</a>
+                        <a class="btn btn-sm btn-primary text-white edit-evaluation" title="Ubah Penilaian" target-id="{{ user.test_id }}" action-type=3 myurl="{{url_for('admin.set_granted', id=user.test_id, valueaction=3 )}}" >Edit</a>
                       {% else %}
                         <a class="btn btn-sm btn-secondary text-white disabled" href="#" title="Penilaian Selesai">Finish</a>
-                        <a class="btn btn-sm btn-primary text-white edit-evaluation" title="Ubah Penilaian" target-id="{{ user.test_id }}" action-type=2>Edit</a>
+                        <a class="btn btn-sm btn-primary text-white edit-evaluation" title="Ubah Penilaian" target-id="{{ user.test_id }}" action-type=2 myurl="{{url_for('admin.set_granted', id=user.test_id, valueaction=2 )}}" >Edit</a>
                       {% endif %}
                     {% endif %}
                   </td>
