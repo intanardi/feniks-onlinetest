@@ -14,19 +14,14 @@
               Hanya file PDF yang dapat di upload!
             </p>
             <hr>
-            {% for message in get_flashed_messages() %}
-                <span class="text-danger text-center">{{ message }}</span>
-            {% endfor %}
           </div>
             <div class="col-6">
                 <div class="form-group">
-                    <label for="psikotest">Psikotest</label>
+                    <label for="psikotest">File Psikotest</label>
                     <input type="file" class="form-control" name="psikotest">
                 </div>
-            </div>
-            <div class="col-6">
                 <div class="form-group">
-                    <label for="maintest">Main Test</label>
+                    <label for="maintest">File Test Utama</label>
                     <input type="file" class="form-control" name="maintest">
                 </div>
             </div>

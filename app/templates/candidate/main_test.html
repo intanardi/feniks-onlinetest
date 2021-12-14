@@ -29,9 +29,15 @@
             </div>
           </div>
           <div class="col-12 mt-2 mb-2 text-center">
-            <p>Gunakan microsoft word pada perangkat laptop anda, untuk mengisi jawaban soal - soal berikut! <br><b>Seluruh bagian Test anda jawab dalam satu file.</b> <br> <b>Perhatikan halaman PDF!</b> jika lebih dari satu lembar, anda bisa klik Next untuk ke halaman selanjutnya, atau previous untuk ke halaman sebelumnya</p>
+            <p>Gunakan microsoft word pada perangkat laptop anda, untuk mengisi jawaban soal - soal berikut! <br><b>Seluruh bagian Test, anda jawab dalam satu file.</b> <br> <b>Perhatikan halaman PDF!</b> jika lebih dari satu lembar, anda bisa klik Next untuk ke halaman selanjutnya, atau previous untuk ke halaman sebelumnya</p>
               <div id="timer" class="mt-2 text-danger">&nbsp;</div>
               <a href="{{url_for('candidate.main_test', id=target_candidate_id)}}" id="next_test" class="btn btn-success hide-element mt-2">Lanjutkan</a>
+              <br>
+                <div id="finish_line" class="">
+                  <p>Jika anda sudah selesai mengerjakan, silahkan klik Selesai</p>
+                  <a href="{{url_for('candidate.update_flag_main_test', id=check_main_test.id)}}" id="finish" class="btn btn-success mt-2">Selesai</a>
+                </div>
+                <br>
               <div id="pdf_preview">
                 <div class="pagination-center">
                   <nav aria-label="Page navigation example">
@@ -42,14 +48,6 @@
                     </ul>
                   </nav>
                 </div>
-                <br>
-                <br>
-                Jika anda sudah selsai mengerjakan silahkan klik Selesai
-                <div>
-                  <a href="{{url_for('candidate.update_flag_main_test', id=check_main_test.id)}}" id="finish" class="btn btn-success mt-2">Selesai</a>
-                </div>
-                <br>
-                <br>
                 <div class="background-viewer">
                   <canvas id="pdf_canvas" width="800px" height="600px"></canvas>
                 </div>
@@ -241,6 +239,7 @@
           $("#timer").html("Waktu Telah Habis");
           $("#pdf_preview").remove();
           $("#next_test").removeClass("hide-element");
+          $("#finish_line").addClass("hide-element");
         } else {
           // Output the result in an element with id="demo"
           document.getElementById("timer").innerHTML = hours + " Jam "
