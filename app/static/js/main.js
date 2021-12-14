@@ -104,7 +104,7 @@ $('.tbelement').on('click', '.setGranted', function(e) {
     }else {
     $.ajax({
         type: "POST",
-        url: "set_granted/"+ getId,
+        url: "/set_granted/"+ getId,
         data: {
             'id': getId,
             'value': getAction
