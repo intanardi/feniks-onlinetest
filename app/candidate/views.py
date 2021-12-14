@@ -161,11 +161,12 @@ def candidate_psikotest():
         datetime_duration = 0
         # Convert datetime object to string in specific format 
         if status :
-            print("duration : ")
+            print("duration of the psikotest schedule : ")
             print(psikotest.timedelta_duration)
             given_time = check_psikotest.started_time
             datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration)
             print(datetime_duration)
+            print("----")
             pdf = psikotest.test_filename
         else :
             pdf = psikotest.instruction_filename
@@ -304,6 +305,7 @@ def main_test():
         print(examination_test)
         print(given_time)
         datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration)
+    print(datetime_duration)
     return render_template('candidate/main_test.html', title=title, user=user, source_file=source_file, flag=flag, status=status, msg_status=msg_status,datetime_duration=datetime_duration, check_main_test=check_main_test, examination_test=examination_test)
 
 @candidate.route('/main/test/save_main_test_detail', methods=['GET', 'POST'])
