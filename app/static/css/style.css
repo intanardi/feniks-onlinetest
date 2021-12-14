@@ -92,12 +92,16 @@
   height: 15px;
 }
 .sidebar .logo-details .logo_name{
-  font-size: 16px !important;
+  font-size: 12px !important;
   color: #fff;
-  font-weight: 600;
+  font-weight: 400;
   margin-left: 12.5px;
-  transition: 0.3s ease;
+  transition: 0.1s ease;
   transition-delay: 0.1s;
+  -webkit-transition: 0.1s ease;
+  -moz-transition: 0.1s ease;
+  -ms-transition: 0.1s ease;
+  -o-transition: 0.1s ease;
 }
 .sidebar.hidden .logo-details .logo_name{
   transition-delay: 0s;

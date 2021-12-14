@@ -110,7 +110,7 @@ $('.tbelement').on('click', '.setGranted', function(e) {
             'value': getAction
         },
         success: function () {
-            window.location.reload();
+            location.reload();
         }
     });
     return false;
