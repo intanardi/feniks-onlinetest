@@ -50,7 +50,6 @@ $( document ).ready(function() {
     if(!res){
         console.log(1);
     }else {
-        column_element.parent().hide(250)
         $.ajax({
             type: "POST",
             url: "delete/"+ $(this).attr("target-id"),
@@ -59,9 +58,12 @@ $( document ).ready(function() {
                 'value': $(this).attr("target-id")
             },
             success: function () {
-                column_element.parent().hide(250)
                 console.log(123)
             }
+        }).done(function(){
+            // $("#my_grad").show(); 
+            column_element.parent().hide(250)
+            console.log("done success")
         });
         return false;
     }
