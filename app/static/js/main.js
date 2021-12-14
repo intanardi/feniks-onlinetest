@@ -102,19 +102,22 @@ $('.tbelement').on('click', '.setGranted', function(e) {
     if(!res){
         console.log(1);
     }else {
-    $.ajax({
-        type: "POST",
-        url: "set_granted/"+ getId,
-        data: {
-            'id': getId,
-            'value': getAction
-        },
-        success: function () {
-            console.log(123)
-            // location.reload();
-        }
-    });
-    return false;
+        $.get('/set_granted/'+ getId).done(function(awesome_data){
+            result = awesome_data;
+            location.reload();
+        });
+    // $.ajax({
+    //     type: "POST",
+    //     url: "set_granted/"+ getId,
+    //     data: {
+    //         'id': getId,
+    //         'value': getAction
+    //     },
+    //     success: function () {
+    //         location.reload();
+    //     }
+    // });
+    // return false;
      }
  });
 
