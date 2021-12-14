@@ -305,7 +305,7 @@ def main_test():
     if status :
         print(examination_test)
         print(given_time)
-        datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration)
+        datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration) + timedelta(seconds=46)
     print(datetime_duration)
     return render_template('candidate/main_test.html', title=title, user=user, source_file=source_file, flag=flag, status=status, msg_status=msg_status,datetime_duration=datetime_duration, check_main_test=check_main_test, examination_test=examination_test)
 
