@@ -18,7 +18,7 @@
   <div class="sidebar">
     <div class="logo-details">
       <img src="{{ url_for('static', filename='img/fenikslogo.png') }}" alt="" class="img-sidemenu-responsive" title="Phoenix">
-      <span class="logo_name">Phoenix</span>
+      <span class="logo_name">Phoenix Accounting Group</span>
     </div>
     <ul class="nav-links">
       {% if (current_user.role.name.lower() == "superadmin") or (current_user.role.name.lower() == "admin") %}
