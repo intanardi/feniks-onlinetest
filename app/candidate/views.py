@@ -164,6 +164,7 @@ def candidate_psikotest():
             print("duration of the psikotest schedule : ")
             print(psikotest.timedelta_duration)
             given_time = check_psikotest.started_time
+            print(given_time)
             datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration)
             print(datetime_duration)
             print("----")
