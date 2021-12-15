@@ -203,14 +203,19 @@
       })
 
         var timer;
+        var duration = "{{durasi}}";
+        console.log("hahahaha")
         var x = setInterval(function() {
 
         // Get today's date and time
         var now = new Date();
-        var myDate = new Date('{{datetime_duration}}');
-        console.log(now)
-        console.log(myDate)
+        // var myDate = new Date('{{datetime_duration}}');
+        var myDate = new Date();
+        // myDate.setSeconds(myDate.getSeconds() + )
         // Find the distance between now and the count down date
+        myDate.setSeconds(myDate.getSeconds() + parseInt(duration));
+        console.log()
+        console.log(myDate)
         var distance = myDate - now;
         console.log(distance)
         // Time calculations for days, hours, minutes and seconds
