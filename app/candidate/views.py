@@ -159,14 +159,20 @@ def candidate_psikotest():
         psikotest_type = Psikotest_Type.query.filter_by(id=psikotest.psikotest_type_id).first()
         psikotest_name = psikotest_type.name
         datetime_duration = 0
+        current_time = 0
         # Convert datetime object to string in specific format 
         if status :
             print("duration of the psikotest schedule : ")
             print(psikotest.timedelta_duration)
             given_time = check_psikotest.started_time
-            print(given_time)
-            datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration) + timedelta(seconds=46)
-            print(datetime_duration)
+            print("now is")
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # current_time = datetime.now()
+            print("----")
+            print(current_time)
+            # datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration) + timedelta(seconds=46)
+            datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration)
+            # print(datetime_duration)
             print("----")
             pdf = psikotest.test_filename
         else :
@@ -175,7 +181,7 @@ def candidate_psikotest():
         source_file = directory + pdf
         # if sattus is False instruction will appear, if True psikotest exam will apppear
         # once intrcution pressed "understand update the flag to True"
-        return render_template('candidate/psikotest_exam.html', title=title, status=status, source_file=source_file, flag=flag, alert=alert, target_candidate_id=check_psikotest.id, psikotest=psikotest, check_psikotest=check_psikotest, datetime_duration=datetime_duration)
+        return render_template('candidate/psikotest_exam.html', title=title, status=status, source_file=source_file, flag=flag, alert=alert, target_candidate_id=check_psikotest.id, psikotest=psikotest, check_psikotest=check_psikotest, datetime_duration=datetime_duration, current_time=current_time)
     else :
         flash("Psikotest Telah Berahir")
         return redirect(url_for("candidate.main_test_preview"))
@@ -286,6 +292,7 @@ def main_test():
     user = User.query.filter_by(id=current_user.id).first()
     check_main_test = Candidate_Main_Schedule.query.filter_by(candidate_id=current_user.id, flag=False).first()
     datetime_duration = 0
+    current_time = 0
     check_psikotest = Candidate_Psikotest_Schedule.query.filter_by(candidate_id=current_user.id, flag=False).first()
     # print(check_psikotest)
     if check_psikotest is not None:
@@ -303,11 +310,15 @@ def main_test():
     flag= check_main_test.flag
     status = check_main_test.status
     if status :
-        print(examination_test)
-        print(given_time)
-        datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration) + timedelta(seconds=46)
-    print(datetime_duration)
-    return render_template('candidate/main_test.html', title=title, user=user, source_file=source_file, flag=flag, status=status, msg_status=msg_status,datetime_duration=datetime_duration, check_main_test=check_main_test, examination_test=examination_test)
+        print("now is")
+        current_time = datetime.now()
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print("----")
+        print(current_time)
+        # datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration) + timedelta(seconds=46)
+        datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration)
+    # print(datetime_duration)
+    return render_template('candidate/main_test.html', title=title, user=user, source_file=source_file, flag=flag, status=status, msg_status=msg_status,datetime_duration=datetime_duration, check_main_test=check_main_test, examination_test=examination_test, current_time=current_time)
 
 @candidate.route('/main/test/save_main_test_detail', methods=['GET', 'POST'])
 @csrf.exempt
