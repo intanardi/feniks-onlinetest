@@ -200,17 +200,13 @@
         renderPage(pageNum)
       })
       var status = "{{ status }}";
-      var duration = "{{durasi}}";
       if (status.toLowerCase() == "true"){
         var timer;
         var x = setInterval(function() {
 
         // Get today's date and time
         var now = new Date();
-        var myDate = new Date();
-        // var myDate = new Date('{{datetime_duration}}');
-        myDate.setSeconds(myDate.getSeconds() + parseInt(duration));
-        console.log()
+        var myDate = new Date('{{datetime_duration}}');
         console.log(now)
         console.log(myDate)
         // Find the distance between now and the count down date
