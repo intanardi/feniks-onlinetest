@@ -160,6 +160,7 @@ def candidate_psikotest():
         psikotest_name = psikotest_type.name
         datetime_duration = 0
         current_time = 0
+        durasi = 0
         # Convert datetime object to string in specific format 
         if status :
             given_time = check_psikotest.started_time
@@ -170,7 +171,8 @@ def candidate_psikotest():
             durasi = psikotest.timedelta_duration * 60
             print(durasi)
             # datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration) + timedelta(seconds=46)
-            datetime_duration = given_time + timedelta(minutes=psikotest.timedelta_duration)
+            datetime_duration = given_time + timedelta(seconds=durasi)
+            datetime_duration = given_time
             # print(datetime_duration)
             print("----")
             pdf = psikotest.test_filename
@@ -180,7 +182,7 @@ def candidate_psikotest():
         source_file = directory + pdf
         # if sattus is False instruction will appear, if True psikotest exam will apppear
         # once intrcution pressed "understand update the flag to True"
-        return render_template('candidate/psikotest_exam.html', title=title, status=status, source_file=source_file, flag=flag, alert=alert, target_candidate_id=check_psikotest.id, psikotest=psikotest, check_psikotest=check_psikotest, datetime_duration=datetime_duration, durasi=durasi)
+        return render_template('candidate/psikotest_exam.html', title=title, status=status, source_file=source_file, flag=flag, alert=alert, target_candidate_id=check_psikotest.id, psikotest=psikotest, check_psikotest=check_psikotest, datetime_duration=datetime_duration, durasi=durasi, current_time=current_time)
     else :
         flash("Psikotest Telah Berahir")
         return redirect(url_for("candidate.main_test_preview"))
@@ -316,9 +318,10 @@ def main_test():
         durasi = examination_test.timedelta_duration * 60
         print(durasi)
         # datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration) + timedelta(seconds=46)
-        datetime_duration = given_time + timedelta(minutes=examination_test.timedelta_duration)
+        datetime_duration = given_time + timedelta(seconds=durasi)
+        datetime_duration = given_time
     # print(datetime_duration)
-    return render_template('candidate/main_test.html', title=title, user=user, source_file=source_file, flag=flag, status=status, msg_status=msg_status,datetime_duration=datetime_duration, check_main_test=check_main_test, examination_test=examination_test, durasi=durasi)
+    return render_template('candidate/main_test.html', title=title, user=user, source_file=source_file, flag=flag, status=status, msg_status=msg_status,datetime_duration=datetime_duration, check_main_test=check_main_test, examination_test=examination_test, durasi=durasi, current_time=current_time)
 
 @candidate.route('/main/test/save_main_test_detail', methods=['GET', 'POST'])
 @csrf.exempt
