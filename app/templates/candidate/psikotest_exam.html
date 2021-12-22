@@ -3,19 +3,18 @@
 {% block page_content %}
   <div class="main-content">
     <div class="content-header mt-3 mb-3">
-      <h4>Soal {{psikotest.name}}</h4>
+      <h4>{{psikotest_type.name}}</h4>
       <hr>
     </div>
     <div class="row">
       <div class="col-12 mt-2 mb-2 text-center">
         <!-- Modal -->
         {% if status %}
-          <p>Gunakan Microsoft Word pada perangkat laptop anda, untuk mengisi jawaban soal - soal berikut! <br> <b>Seluruh bagian Psikotest anda jawab dalam satu file.</b> </p>
-          <br><b>Perhatikan halaman PDF!</b> jika lebih dari satu lembar, anda bisa klik Next untuk ke halaman selanjutnya, atau previous untuk ke halaman sebelumnya</p>
+          
+          <p><br>Gunakan file “Lembar Jawaban” yang telah dicantumkan di email untuk menjawab tes ini pada perangkat laptop anda. Jawablah dengan menuliskan jawaban berdasarkan instruksi. <br> <br>
         {% else %}
-          <p>Dibawah ini merupakan contoh Soal <b>{{ psikotest.name }}</b>. SIlahkan baca instruksi dengan teliti. <br>
-          Klik tombol <b>"Mengerti"</b> jika anda sudah mengerti. dengan klik <b>"Mengerti"</b> akan otomatis masuk ke soal Test! <br>
-          Tombol <b>"Mengerti"</b> ada di bawah file PDF pada halaman ini.</p>
+        <p>Gunakan Microsoft Word pada perangkat laptop anda, untuk mengisi jawaban soal - soal berikut! <br> <b>Seluruh bagian Psikotest anda jawab dalam satu file.</b>
+          <br>Perhatikan Soal! Klik Next untuk melihat halaman selanjutnya</p>
         {% endif %}
         {% if psikotest.alert %}
         <h3><b>{{ psikotest.alert }}</b></h3>

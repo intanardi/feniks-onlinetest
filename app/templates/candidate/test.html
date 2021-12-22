@@ -8,7 +8,7 @@
     <div class="text-center">
       <!-- {{ status }} -->
       {% if schedule is not none %}
-          <p>Anda sudah masuk ke waktu tes. Tes terdiri dari <b>Psikotest</b> kemudian dilanjutkan dengan <b>Tes utama,</b><br> berdasarkan divisi dan level yang anda lamar. Silahkan klik <b>"Mulai Test"</b>!</p>
+          <p>Anda sudah masuk ke waktu tes. Tes terdiri dari <b>Psikotest</b> kemudian dilanjutkan dengan <b>Technical Test</b><br> berdasarkan divisi dan level yang anda lamar. Silahkan klik <b>"Mulai Test"</b>!</p>
           {% if status == 00 %}
             <a href="{{ url_for('candidate.save_test_detail') }}" class="btn btn-success">Mulai Test</a>
           {% else %}

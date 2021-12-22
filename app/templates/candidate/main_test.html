@@ -3,7 +3,7 @@
 {% block page_content %}
 <div class="main-content">
     <div class="content-header mt-3 mb-3">
-      <h4>Soal {{user.division.name}} {{ user.level.name }} {% if status %}- {{examination_test.name}} {% endif %}</h4>
+      <h4>Soal {{user.division.name}} {{ user.level.name }}</h4>
       <hr>
     </div>
     <div class="row">
@@ -29,7 +29,8 @@
             </div>
           </div>
           <div class="col-12 mt-2 mb-2 text-center">
-            <p>Gunakan microsoft word pada perangkat laptop anda, untuk mengisi jawaban soal - soal berikut! <br><b>Seluruh bagian Test, anda jawab dalam satu file.</b> <br> <b>Perhatikan halaman PDF!</b> jika lebih dari satu lembar, anda bisa klik Next untuk ke halaman selanjutnya, atau previous untuk ke halaman sebelumnya</p>
+            <p>Mohon menggunakan Microsoft excel/ word untuk mengerjakan tes ini.<br><b>Seluruh bagian Test, anda jawab dalam satu file.</b> <br>
+               <br> Perhatikan Soal! Klik Next untuk melihat halaman selanjutnya</p>
               <div id="timer" class="mt-2 text-danger">&nbsp;</div>
               <a href="{{url_for('candidate.main_test', id=target_candidate_id)}}" id="next_test" class="btn btn-success hide-element mt-2">Lanjutkan</a>
               <br>
@@ -62,7 +63,12 @@
         {% endif %}
       {% else %}
       <div class="col-12 mt-2 mb-2 text-center">
-        <p>Terima kasih telah melaksanakan psikotest.<br>Anda berada di halaman tes utama untuk posisi yang anda lamar.<br> Silahkan klik tombol <b>"Lanjutkan"</b></p>
+        <p>
+      Terima kasih telah menyelesaikan Psikotest <br>
+      Sekarang anda dapat mengerjakan Technical Test	<br>
+      Silahkan klik tombol <b>“Lanjutkan”</b>
+
+        </p>
         <form action="" method="POST">
           <a href="{{ url_for('candidate.save_main_test_detail') }}" class="btn btn-primary text-white">Lanjutkan</a>
         </form>
