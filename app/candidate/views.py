@@ -182,7 +182,7 @@ def candidate_psikotest():
         source_file = directory + pdf
         # if sattus is False instruction will appear, if True psikotest exam will apppear
         # once intrcution pressed "understand update the flag to True"
-        return render_template('candidate/psikotest_exam.html', title=title, status=status, source_file=source_file, flag=flag, alert=alert, target_candidate_id=check_psikotest.id, psikotest=psikotest, check_psikotest=check_psikotest, datetime_duration=datetime_duration, durasi=durasi, current_time=current_time)
+        return render_template('candidate/psikotest_exam.html', title=title, status=status, source_file=source_file, flag=flag, alert=alert, target_candidate_id=check_psikotest.id, psikotest=psikotest, check_psikotest=check_psikotest, datetime_duration=datetime_duration, durasi=durasi, current_time=current_time,psikotest_type=psikotest_type)
     else :
         flash("Psikotest Telah Berahir")
         return redirect(url_for("candidate.main_test_preview"))
