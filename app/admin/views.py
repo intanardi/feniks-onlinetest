@@ -1177,7 +1177,7 @@ def question_pdf_delete(id):
     return redirect(url_for('admin.question_pdf_data', id=examination_detail.examination_id))
 
 # dadasdssadsad
-@admin.route('/test/result/', methods=['GET', 'POST'])
+@admin.route('/test/result/data', methods=['GET', 'POST'])
 @csrf.exempt
 @login_required
 def test_result():
